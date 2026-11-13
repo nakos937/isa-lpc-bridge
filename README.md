@@ -5,8 +5,8 @@ It is meant for retro **sound cards under DOS and DOS-based systems** (Sound Bla
 Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a microcontroller (RP2354B, firmware in C) in
 place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable.
 
-> **Status.** Revision `PASS_HG25` works. Tested by the author with a **Sound Blaster 16, Gravis UltraSound, GUS PnP and
-> Orpheus II** (all working without problems) and an ISA **floppy/COM port card**. Cards in the table below that are not marked
+> **Status.** Revision `PASS_HG25` works. Tested by the author with a **Sound Blaster 16, Gravis UltraSound, GUS PnP,
+> Orpheus II and a generic OPL3-SAx card** (all working without problems) and an ISA **floppy/COM port card**. Cards in the table below that are not marked
 > *tested* are expected to work from datasheets and Linux driver sources. Reports and fixes are welcome.
 
 ![top view](images/top.png)
@@ -88,12 +88,15 @@ The `ISALPC` presets in parentheses set up the chipset and the bridge for the ca
 | **GUS PnP / AMD InterWave** (`guspnp`) | **tested**, works | needs the ISA PnP ports (279, A79, read port) forwarded: `@pnp` is included |
 | **Orpheus II** (`orpheus2`) | **tested**, works | CS4237B + InterWave + OPL3 + PCMIDI; needs all four LPC windows. WSS at 534 collides with the chipset GPIO block on some boards (the X99M): `ISALPC` moves that block, **DOS only** |
 | **AWE32/AWE64** (`awe32`) | expected | the EMU8000 uses 16-bit I/O (ports 620/A20/E20): supported. Needs five 256-port blocks, which is more than the chipset has windows for unless you free the Super I/O and COM decodes |
-| Yamaha OPL3-SAx, ESS AudioDrive, Crystal CS423x, WSS (`opl3sa`, `ess`, `cs423x`, `wss`) | expected | WSS base 530 is inside the GPIO block on X99M-like boards (see above) |
+| **Yamaha OPL3-SAx** (`opl3sa`) | **tested**, works (generic card) | |
+| ESS AudioDrive, Crystal CS423x, WSS (`ess`, `cs423x`, `wss`) | expected | WSS base 530 is inside the GPIO block on X99M-like boards (see above) |
 | MPU-401 interfaces, Roland SCC-1/LAPC-I (`mpu401`) | expected | the board makes -12 V and -5 V |
 | Pro Audio Spectrum 16 | **impossible** | its registers span 19 port blocks, the chipset has four decode windows |
 | Turtle Beach MultiSound / Pinnacle / Fiji, any card with an on-board memory window | **not supported** | needs ISA *memory* cycles. UEFI hosts occupy that memory space anyway |
 | ADI/Echo PSS | possible | 16-bit reads need an entry in `word_rd` (a commented line is in `fw/src/main.c`) |
 | Floppy, COM, LPT, IDE, NE2000, SCSI ISA cards (`fdc`, `com1`, `lpt1`, `ide1`, `ne2000`, ...) | floppy + COM card **tested**, works; the other presets exist but are not the project's goal | disable the onboard ports in the BIOS first, or both answer |
+
+Cards the author has no access to are marked *expected* and have not been tried: more test reports are welcome.
 
 Not intended: ISA VGA cards, bus-mastering cards, cards that need ISA memory.
 
