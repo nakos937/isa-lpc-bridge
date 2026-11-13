@@ -1,7 +1,5 @@
 # isa-lpc-bridge: a real 16-bit ISA slot on a modern motherboard, through the TPM header
 
-[Magyar változat / Hungarian version: README.hu.md](README.hu.md)
-
 A long, thin riser board with one **16-bit ISA slot** that connects to a modern PC through its **TPM header (LPC bus)**.
 It is meant for retro **sound cards under DOS and DOS-based systems** (Sound Blaster, Gravis UltraSound, AWE32, Orpheus II, ...).
 Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a microcontroller (RP2354B, firmware in C) in
