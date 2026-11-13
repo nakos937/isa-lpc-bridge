@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Program the flash build over SWD (only needed when the PIO programs or the C code change; tuning needs no reflash).
 cd "$(dirname "$0")/.."
 : "${OPENOCD:=$(command -v openocd || echo $HOME/work/toolchain/openocd/bin/openocd)}"

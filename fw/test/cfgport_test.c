@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // cc -Isrc -o cfgport_test test/cfgport_test.c && ./cfgport_test
 #include <assert.h>
 #include <stddef.h>

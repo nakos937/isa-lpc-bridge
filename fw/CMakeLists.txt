@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 cmake_minimum_required(VERSION 3.13)
 
 # usage:  export PICO_SDK_PATH=~/work/toolchain/pico-sdk   (SDK 2.1 or newer)

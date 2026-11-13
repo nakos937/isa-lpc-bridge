@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Independent clearance audit (own distance maths for tracks and vias; KiCad shapes only for pads and zone fills).
 # JLC multilayer limits: copper to copper 0.09, pad to track 0.1, via hole to other-net copper 0.2 (tracks, inner-layer copper), hole to hole 0.2.
 import pcbnew, sys, math, collections

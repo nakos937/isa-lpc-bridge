@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // 16 bit ISA I/O from LPC byte cycles: the PCH splits a word access into byte cycles to a and a + 1. On a port that answers
 // IOCS16# the two become one word cycle.
 #include "io16.h"

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // ISA <-> LPC bridge firmware for the RP2354B board (see docs/firmware.md).
 #include <string.h>
 #include "cfg.h"

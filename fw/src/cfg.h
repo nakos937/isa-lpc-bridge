@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Debug / tuning block at a fixed RAM address (0x2007C000, plain pointer, nothing is linked there).
 // Everything here is read live, so timing, port filters and cycles can be changed from the debugger without a reflash:
 //   openocd: mww 0x2007C008 500      (t_cmd_ns)       mdw 0x2007C000 16     (cfg + stats)

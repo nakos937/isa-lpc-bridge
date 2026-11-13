@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Tiny RP2350 PIO simulator + assembler for the subset used by fw/pio/*.pio.
 Own code, no external dependency. Instruction encodings follow the RP2350 datasheet (PIO v1)."""
 import re

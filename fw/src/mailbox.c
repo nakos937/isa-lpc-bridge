@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Debugger mailbox: run ISA cycles from the SWD probe without an LPC host.
 //   openocd:  mww 0x2007D?? ...   (see tools/isa.tcl, which wraps these)
 #include "cfg.h"

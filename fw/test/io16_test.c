@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // cc -I../src -o io16_test io16_test.c && ./io16_test
 #include <assert.h>
 #include <stdio.h>

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 import pcbnew, sys, json
 b = pcbnew.LoadBoard(sys.argv[1]); out = []
 for f in sorted(b.GetFootprints(), key=lambda f: f.GetReference()):

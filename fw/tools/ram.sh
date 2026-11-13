@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Load the RAM build over SWD and run it: no flash writes, a power cycle drops it.
 # usage: tools/ram.sh   (probe: CMSIS-DAP, e.g. Raspberry Pi Debug Probe / Pico running picoprobe)
 # A reset would start the bootrom, so the core is pointed at the image by hand: MSP and PC from the vector table, VTOR to it.

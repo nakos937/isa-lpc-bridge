@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Free LPC resources in ASRock X99M Killer/3.1 BIOS P4.01 (X99MK3_4.01). Does not flash anything.
 #   python3 patch_x99m.py X99MK3_4.01 X99MK3_4.01.isalpc
 # Every patch site is checked for the expected bytes first; the sites are inside uncompressed PEIM files with fixed 0xAA

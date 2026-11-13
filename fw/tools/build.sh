@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # usage: tools/build.sh [ram]    needs PICO_SDK_PATH (SDK 2.1+), arm-none-eabi-gcc, cmake, ninja
 set -e
 cd "$(dirname "$0")/.."

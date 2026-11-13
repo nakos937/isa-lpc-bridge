@@ -1,3 +1,4 @@
+; SPDX-License-Identifier: GPL-2.0-or-later
 ; LPC target response engine, script player (PIO1, GPIO base 16, loaded after lpc_fe).
 ;
 ; lpc_fe raises IRQ 0 after the last host nibble it sampled (clock N). Host cycle: ... TAR1 (clock N+1, host drives 1111),

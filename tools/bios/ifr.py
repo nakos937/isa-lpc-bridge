@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 import sys, struct, re
 b = open(sys.argv[1], 'rb').read(); want = re.compile(sys.argv[2], re.I)
 # string packages (en-US)

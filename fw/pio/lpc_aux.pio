@@ -1,3 +1,4 @@
+; SPDX-License-Identifier: GPL-2.0-or-later
 ; LDRQ# and SERIRQ engines (PIO2, GPIO base 16). IN base = LAD0: LAD0-3 = pins 0-3, LFRAME# = 4, LCLK = 5, SERIRQ = 6.
 .pio_version 1
 

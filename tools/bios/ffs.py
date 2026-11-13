@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # top-level FFS files of a flash image: offsets, checksum check. usage: ffs.py image [offset ...]
 import sys, struct, uuid
 img = open(sys.argv[1], 'rb').read(); want = [int(x, 16) for x in sys.argv[2:]]

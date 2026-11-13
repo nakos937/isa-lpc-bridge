@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // ISA bus master: CPU driven cycles through the 595/165 chain, the AHCT244 strobes and the LVC4245A data transceivers.
 #include "isa.h"
 #include "cfg.h"

@@ -1,3 +1,4 @@
+; SPDX-License-Identifier: GPL-2.0-or-later
 ; LPC target front end (PIO0, GPIO base 16).
 ;
 ; Pin map (IN base = LAD0 = GPIO40): LAD0-3 = pins 0-3, LFRAME# = 4, LCLK = 5, SERIRQ = 6, LDRQ# = 7.

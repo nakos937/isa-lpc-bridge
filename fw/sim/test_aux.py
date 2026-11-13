@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Checks ldrq and serirq programs (fw/pio/lpc_aux.pio) against a behavioural host. python3 fw/sim/test_aux.py"""
 import os, random, sys
 sys.path.insert(0, os.path.dirname(__file__))

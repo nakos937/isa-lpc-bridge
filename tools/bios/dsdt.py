@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 import sys, struct, re, collections
 b = open(sys.argv[1], 'rb').read()
 def nameseg(x): return len(x) == 4 and all((65 <= c <= 90) or c == 95 or (48 <= c <= 57) for c in x) and not (48 <= x[0] <= 57)

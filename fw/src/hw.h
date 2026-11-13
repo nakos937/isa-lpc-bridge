@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // Pin map of PASS_HG25 (checked against the KiCad RP2354B symbol).
 #pragma once
 #include <stdint.h>

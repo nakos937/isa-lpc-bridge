@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 """Cycle-accurate-ish check of lpc_fe.pio + lpc_tx.pio (script player) against a reactive behavioural LPC host.
 Covers I/O read/write and 8 and 16 bit DMA read/write. Randomises LCLK phase against the system clock, host launch delay
 (2..11 ns) and CPU reply latency. The CPU model builds the reply scripts exactly like src/lpc.c.

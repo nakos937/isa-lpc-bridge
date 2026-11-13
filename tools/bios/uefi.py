@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # minimal UEFI flash image walker: descriptor regions, firmware volumes, FFS files, sections (LZMA GUIDed, FV-in-FV)
 import sys, struct, lzma, uuid, os, json
 img = open(sys.argv[1], 'rb').read(); out = sys.argv[2]; os.makedirs(out, exist_ok=True)

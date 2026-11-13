@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // LPC target: PIO front end (lpc_fe), script player (lpc_tx), LDRQ# and SERIRQ engines (lpc_aux) and the CPU side that
 // turns LPC cycles into ISA cycles and builds the reply scripts (format in pio/lpc_tx.pio).
 #include "lpc.h"
