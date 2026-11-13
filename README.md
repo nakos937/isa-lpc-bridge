@@ -5,9 +5,9 @@ It is meant for retro **sound cards under DOS and DOS-based systems** (Sound Bla
 Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a microcontroller (RP2354B, firmware in C) in
 place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable.
 
-> **Status.** Revision `PASS_HG25` was designed, reviewed against datasheets and sent to fabrication in November 2026;
-> hardware bring-up is in progress. The card compatibility below is expected behaviour derived from datasheets and Linux
-> driver sources. Reports and fixes are welcome.
+> **Status.** Revision `PASS_HG25` works. Tested by the author with a **Sound Blaster 16, Gravis UltraSound, GUS PnP and
+> Orpheus II** (all working without problems) and an ISA **floppy/COM port card**. Cards in the table below that are not marked
+> *tested* are expected to work from datasheets and Linux driver sources. Reports and fixes are welcome.
 
 ![top view](images/top.png)
 
@@ -69,7 +69,7 @@ flowchart LR
 ### Motherboards / chipsets
 | Host | I/O + IRQ | DMA | Notes |
 |---|---|---|---|
-| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | design target | design target | BIOS analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17-pin TPMS1 header |
+| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | works | design target | BIOS analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17-pin TPMS1 header |
 | Other Intel chipsets **before the 100 series** (6/7/8/9 series, X79/X99/C600) | expected | expected, needs LDRQ# wire | LPC DMA exists on these. Header pinouts differ per board: check with a meter |
 | Intel **100 series and newer** (Skylake and later) | expected (GEN decode ranges exist) | **no**: Intel removed LDRQ# from the 100 series on | FM synthesis, MIDI and PIO sound work; digitised audio in DOS games needs DMA and will not. See the [lpcexp readme](https://github.com/lss4/lpcexp) |
 | AMD (AM4 and similar) | use lpcexp (AMD code), not `isalpc` | AM4: unknown to us; **AM5/SP5: no LDRQ#** | not covered |
@@ -77,23 +77,23 @@ flowchart LR
 "DMA until Intel 100" in short: the chipset needs an LDRQ# pin, and Intel dropped it with the 100 series. Our information
 about the exact cut-off comes from the lpcexp project, we did not verify it against datasheets. Only X99 is our design target.
 
-### Sound cards (expected, from datasheets and Linux driver sources)
+### Sound cards (*tested* = tried by the author; otherwise expected from datasheets and Linux driver sources)
 The `ISALPC` presets in parentheses set up the chipset and the bridge for the card.
 
-| Card | Expectation | Notes |
+| Card | Status | Notes |
 |---|---|---|
-| Sound Blaster 1.x/2.0/Pro, **Sound Blaster 16** (`sb`, `sb16`) | works | byte I/O only. 8-bit DMA 1, 16-bit DMA 5. IRQ 5/7. MPU-401 at 330 |
+| Sound Blaster 1.x/2.0/Pro, **Sound Blaster 16** (`sb`, `sb16`) | **tested**, works (SB16) | byte I/O only. 8-bit DMA 1, 16-bit DMA 5. IRQ 5/7. MPU-401 at 330 |
 | AdLib, OPL2/OPL3 (`adlib`) | works | ports 388-38B, no IRQ or DMA |
-| **Gravis UltraSound** classic (`gus`, `gusmax`) | works | base 240; word access on base+0x104 is handled |
-| **GUS PnP / AMD InterWave** (`guspnp`) | works | needs the ISA PnP ports (279, A79, read port) forwarded: `@pnp` is included |
-| **Orpheus II** (`orpheus2`) | expected | CS4237B + InterWave + OPL3 + PCMIDI; needs all four LPC windows. WSS at 534 collides with the chipset GPIO block on some boards (the X99M): `ISALPC` moves that block, **DOS only** |
+| **Gravis UltraSound** classic (`gus`, `gusmax`) | **tested**, works | base 240; word access on base+0x104 is handled |
+| **GUS PnP / AMD InterWave** (`guspnp`) | **tested**, works | needs the ISA PnP ports (279, A79, read port) forwarded: `@pnp` is included |
+| **Orpheus II** (`orpheus2`) | **tested**, works | CS4237B + InterWave + OPL3 + PCMIDI; needs all four LPC windows. WSS at 534 collides with the chipset GPIO block on some boards (the X99M): `ISALPC` moves that block, **DOS only** |
 | **AWE32/AWE64** (`awe32`) | expected | the EMU8000 uses 16-bit I/O (ports 620/A20/E20): supported. Needs five 256-port blocks, which is more than the chipset has windows for unless you free the Super I/O and COM decodes |
 | Yamaha OPL3-SAx, ESS AudioDrive, Crystal CS423x, WSS (`opl3sa`, `ess`, `cs423x`, `wss`) | expected | WSS base 530 is inside the GPIO block on X99M-like boards (see above) |
 | MPU-401 interfaces, Roland SCC-1/LAPC-I (`mpu401`) | expected | the board makes -12 V and -5 V |
 | Pro Audio Spectrum 16 | **impossible** | its registers span 19 port blocks, the chipset has four decode windows |
 | Turtle Beach MultiSound / Pinnacle / Fiji, any card with an on-board memory window | **not supported** | needs ISA *memory* cycles. UEFI hosts occupy that memory space anyway |
 | ADI/Echo PSS | possible | 16-bit reads need an entry in `word_rd` (a commented line is in `fw/src/main.c`) |
-| Floppy, COM, LPT, IDE, NE2000, SCSI ISA cards (`fdc`, `com1`, `lpt1`, `ide1`, `ne2000`, ...) | presets exist, not the project's goal | disable the onboard ports in the BIOS first, or both answer |
+| Floppy, COM, LPT, IDE, NE2000, SCSI ISA cards (`fdc`, `com1`, `lpt1`, `ide1`, `ne2000`, ...) | floppy + COM card **tested**, works; the other presets exist but are not the project's goal | disable the onboard ports in the BIOS first, or both answer |
 
 Not intended: ISA VGA cards, bus-mastering cards, cards that need ISA memory.
 
