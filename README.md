@@ -1,6 +1,6 @@
 # isa-lpc-bridge: a real 16-bit ISA slot on a modern motherboard, through the TPM header
 
-A long, thin riser board with one **16-bit ISA slot** that connects to a modern PC through its **TPM header (LPC bus)**.
+A riser board with one **16-bit ISA slot** that connects to a modern PC through its **TPM header (LPC bus)**.
 It is meant for retro **sound cards under DOS and DOS-based systems** (Sound Blaster, Gravis UltraSound, AWE32, Orpheus II, ...).
 Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a microcontroller (RP2354B, firmware in C) in
 place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable.
@@ -15,7 +15,7 @@ place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable
 
 *3D renders from KiCad. The ISA socket and the power connector have no 3D model in the render and show as pads/outline.*
 
-## At a glance
+## Base specs
 
 | | |
 |---|---|
@@ -74,9 +74,6 @@ flowchart LR
 | Intel **100 series and newer** (Skylake and later) | expected (GEN decode ranges exist) | **no**: Intel removed LDRQ# from the 100 series on | FM synthesis, MIDI and PIO sound work; digitised audio in DOS games needs DMA and will not. See the [lpcexp readme](https://github.com/lss4/lpcexp) |
 | AMD (AM4 and similar) | use lpcexp (AMD code), not `isalpc` | AM4: unknown to us; **AM5/SP5: no LDRQ#** | not covered |
 
-"DMA until Intel 100" in short: the chipset needs an LDRQ# pin, and Intel dropped it with the 100 series. Our information
-about the exact cut-off comes from the lpcexp project, we did not verify it against datasheets. Only X99 is our design target.
-
 ### Sound cards (*tested* = tried by the author; otherwise expected from datasheets and Linux driver sources)
 The `ISALPC` presets in parentheses set up the chipset and the bridge for the card.
 
@@ -100,9 +97,6 @@ Cards the author has no access to are marked *expected* and have not been tried:
 
 Not intended: ISA VGA cards, bus-mastering cards, cards that need ISA memory.
 
-How the card list was made: a survey of Linux's ISA sound drivers for 16-bit I/O ([docs/card-io-survey.md](docs/card-io-survey.md)),
-the AMD InterWave and Cirrus CS4237B datasheets, and the TPM/LPC documents of the chipset.
-
 ## Mounting it in a case
 - The board is **240 mm long and 36 mm wide**. It is made for a case with **two free PCI/expansion slot positions** next to
   each other (a microATX or ATX board with the lower slots empty); measure your case before ordering.
@@ -115,7 +109,6 @@ the AMD InterWave and Cirrus CS4237B datasheets, and the TPM/LPC documents of th
 - Cables leave from the long edge at the right end: the power plug (J1), the SWD header (J2) and the 2x9 TPM-style header
   (J4) are right-angle parts. The tall parts are the three headers and the power connector.
 - Keep the LPC wiring **short** (10 cm or less) and use the ground pins of J4.
-- Use the **PSU floppy plug** for power. The board never takes power from the TPM header.
 
 ## Wiring
 
@@ -126,9 +119,7 @@ the AMD InterWave and Cirrus CS4237B datasheets, and the TPM/LPC documents of th
 | 2, 3 | GND |
 | 4 | +12 V (yellow wire) |
 
-Fuses: 2.6 A hold on +5 V, 1.5 A hold on +12 V (resettable). Surge clamps on both rails. **Check polarity with a meter
-before the first power-up**: the connector is keyed and was checked against the manufacturer drawing, but not yet against a real plug on a real board.
-Plug and unplug the PSU connector only with the PSU switched off.
+Fuses: 2.6 A hold on +5 V, 1.5 A hold on +12 V (resettable). Surge clamps on both rails.
 
 ### Host header J4 (2x9, 2.54 mm, right angle)
 Wired 1:1 to the ASRock-style TPM header. Pin numbers as on the standard 20-1-pin TPM layout (odd pins in one row, even in
@@ -246,8 +237,7 @@ Linux: `cc -O2 -o isalpc host/isalpc.c`, run as root. DOS: `make -C host ISALPC.
 - **ASRock X99M Killer 3.1 BIOS P4.01**: analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md): three of the four
   generic decode windows are used, the chipset GPIO block sits at 500-57F (collides with WSS/Orpheus at 530/534), serial IRQ
   starts in quiet mode. An optional patcher ([tools/bios/patch_x99m.py](tools/bios/patch_x99m.py)) frees the unused windows
-  from power-on (7 bytes). It checks the sha256 of the original image and edits only what it recognises. **The BIOS
-  image itself is not in this repo** (ASRock's firmware). Flash modified firmware only if you have an SPI programmer
+  from power-on (7 bytes). It checks the sha256 of the original image and edits only what it recognises. Flash modified firmware only if you have an SPI programmer
   and a backup. `ISALPC` does the same at run time, so the patch is optional.
 
 ## Building everything
@@ -278,13 +268,10 @@ images/    renders
 
 ## Quirks and limits
 - Run `ISALPC` at every boot: the BIOS resets the chipset's decode windows each time. The bridge's own settings can be kept in its flash with `ISALPC ... SAVE`, otherwise they are lost at power-off.
-- The ISA bus is driven by an MCU through shift registers: **it is slower than a real ISA slot** (not measured yet), and
-  I/O writes are posted. 16-bit read pairing is on only for ports in `cfg.word_rd` (EMU8000, InterWave).
 - 5 V logic on the ISA side through buffers; the MCU side is 3.3 V. `IOCS16#` is sensed after each address change.
 - There is no USB, no BOOTSEL button: a failed flash needs an SWD probe. The RAM image avoids flashing altogether.
-- The board draws its power from the PSU floppy plug only; use the plug, not the motherboard header.
 - The hand-wired LDRQ# makes this a **hobby/experimenter board**, not a plug-and-play product.
-- Overclock: 400 MHz at 1.30 V is the default (window 340-500 MHz). The core regulator and the 3.3 V LDO get warm.
+- 400 MHz at 1.30 V is the default (allowed window 340-500 MHz). Put a heatsink the size of the MCU (10 x 10 mm) on it with thermal tape.
 - ISA PnP cards need a decode window for the PnP ports; combined with a four-window limit this restricts what fits
   (AWE32 + PnP does not).
 
@@ -292,7 +279,7 @@ images/    renders
 - Idea and the DOS tool's concept: **rasteri's [dISAppointment](https://github.com/rasteri/dISAppointment)** (CC BY-SA 4.0): ISA socket
   footprint, pull-up network, `sapphisa`; **[lpcexp](https://github.com/lss4/lpcexp)** (CC BY-SA 4.0): chipset
   register programming; both share the DMA reset register list with `ISALPC`. The MCU power circuit follows Raspberry Pi's RP2350 minimal design (MIT).
-- **Everything we wrote (board, firmware, host tool, scripts, docs): GPL-2.0-or-later.** The ISA socket footprint and the pull-up
+- **Board, firmware, host tool, scripts, docs: GPL-2.0-or-later.** The ISA socket footprint and the pull-up
   values come from dISAppointment and stay CC BY-SA 4.0.
   See [LICENSE.md](LICENSE.md) and [LICENSES/](LICENSES/).
 - No warranty. Plugging a PSU into a board you assembled yourself, and wiring to a motherboard with a soldering iron,
