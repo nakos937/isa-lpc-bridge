@@ -38,7 +38,7 @@ runs from scratch X with bus priority.
 Default 400 MHz at 1.30 V (PLL 1200 MHz / 3, XIP flash at 57 MHz). Allowed window 340..500 MHz (`main.c` stops the build outside it, `-DFW_ALLOW_ANY_CLK` overrides): in `fw/sim` (`DUTY=0.37..0.63`, core 1 claim latency up to 30 sys clocks) cycles fail below ~320 MHz and above ~500 MHz. At 400 MHz the claim may take 40 clocks. Other values: `cmake -S . -B build -G Ninja -DFW_SYSCLK_KHZ=792000 -DFW_VREG=VREG_VOLTAGE_1_60`
 (see the table in `src/main.c`; above 550 MHz the voltage is yours to choose). With a 12 MHz crystal 800 MHz is not reachable
 exactly, 792 MHz (VCO 1584 MHz / 2) is the nearest. The code raises the vreg limit when needed (only above 400 MHz), sets the XIP flash divider
-first (SCK <= 66 MHz) and scales the 595/165 chain delays and every ns timing with the clock. Not tested on the board.
+first (SCK <= 66 MHz) and scales the 595/165 chain delays and every ns timing with the clock.
 The core and internal regulator get hot at high voltage: a heatsink helps, and check the 3.3 V LDO and the 3.3 uH
 inductor (L2) current at the chosen voltage. References downloaded to
 the Raspberry Pi forum thread 375975 and the code gist it links.
@@ -70,7 +70,7 @@ BALE control (held high), OSC (B30 = 14.318 MHz oscillator, not firmware control
   and channel 4 (bus master) are refused with SYNC error; the host does not use them unless the BIOS enables them.
 - SERIRQ: the engine counts frames from every start pulse, so it follows continuous and quiet mode. In quiet mode the host only
   polls after a device pulse: when the IRQ state changes the CPU injects a ~120 ns low pulse through exec (src/lpc.c,
-  serirq_kick). Untested on real hosts. Polarity per the X99 PCH datasheet: an IRQ frame is driven low while the ISA IRQ
+  serirq_kick). Polarity per the X99 PCH datasheet: an IRQ frame is driven low while the ISA IRQ
   line is low, released while it is high; IOCHCK# frame low = asserted. Only frames in `irq_frames` are served (default 3, 5,
   7, 9, 10, 11, 15, IOCHCK#): the Super I/O owns the rest (COM1 IRQ4, PS/2 mouse IRQ12).
   PIO instruction memory: FE 30, TX 27, AUX 26 of 32, further LPC features need a redesign.

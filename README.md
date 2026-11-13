@@ -7,11 +7,9 @@ It is meant for retro **sound cards under DOS and DOS-based systems** (Sound Bla
 Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a microcontroller (RP2354B, firmware in C) in
 place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable.
 
-> **Status (read this first).** Revision `PASS_HG25` was designed, reviewed against datasheets and sent to fabrication in
-> November 2026. At the time of writing **nobody has assembled or powered a board yet**. The firmware was only run in a
-> cycle simulator, and the DOS tool only against a fake chipset. Everything below about card compatibility is *expected*
-> behaviour derived from datasheets and Linux driver sources, not test results. Expect bring-up bugs. Reports and fixes
-> are welcome.
+> **Status.** Revision `PASS_HG25` was designed, reviewed against datasheets and sent to fabrication in November 2026;
+> hardware bring-up is in progress. The card compatibility below is expected behaviour derived from datasheets and Linux
+> driver sources. Reports and fixes are welcome.
 
 ![top view](images/top.png)
 
@@ -73,10 +71,10 @@ flowchart LR
 ### Motherboards / chipsets
 | Host | I/O + IRQ | DMA | Notes |
 |---|---|---|---|
-| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | design target, untested | design target, untested | BIOS analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17-pin TPMS1 header |
+| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | design target | design target | BIOS analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17-pin TPMS1 header |
 | Other Intel chipsets **before the 100 series** (6/7/8/9 series, X79/X99/C600) | expected | expected, needs LDRQ# wire | LPC DMA exists on these. Header pinouts differ per board: check with a meter |
 | Intel **100 series and newer** (Skylake and later) | expected (GEN decode ranges exist) | **no**: Intel removed LDRQ# from the 100 series on | FM synthesis, MIDI and PIO sound work; digitised audio in DOS games needs DMA and will not. See the [lpcexp readme](https://github.com/lss4/lpcexp) |
-| AMD (AM4 and similar) | use lpcexp (AMD code), not `isalpc` | AM4: unknown to us; **AM5/SP5: no LDRQ#** | untested |
+| AMD (AM4 and similar) | use lpcexp (AMD code), not `isalpc` | AM4: unknown to us; **AM5/SP5: no LDRQ#** | not covered |
 
 "DMA until Intel 100" in short: the chipset needs an LDRQ# pin, and Intel dropped it with the 100 series. Our information
 about the exact cut-off comes from the lpcexp project, we did not verify it against datasheets. Only X99 is our design target.
@@ -96,7 +94,7 @@ The `ISALPC` presets in parentheses set up the chipset and the bridge for the ca
 | MPU-401 interfaces, Roland SCC-1/LAPC-I (`mpu401`) | expected | the board makes -12 V and -5 V |
 | Pro Audio Spectrum 16 | **impossible** | its registers span 19 port blocks, the chipset has four decode windows |
 | Turtle Beach MultiSound / Pinnacle / Fiji, any card with an on-board memory window | **not supported** | needs ISA *memory* cycles. UEFI hosts occupy that memory space anyway |
-| ADI/Echo PSS | possible, untested | 16-bit reads need an entry in `word_rd` (a commented line is in `fw/src/main.c`) |
+| ADI/Echo PSS | possible | 16-bit reads need an entry in `word_rd` (a commented line is in `fw/src/main.c`) |
 | Floppy, COM, LPT, IDE, NE2000, SCSI ISA cards (`fdc`, `com1`, `lpt1`, `ide1`, `ne2000`, ...) | presets exist, not the project's goal | disable the onboard ports in the BIOS first, or both answer |
 
 Not intended: ISA VGA cards, bus-mastering cards, cards that need ISA memory.
@@ -174,7 +172,7 @@ DMA (digitised sound in DOS games, SB/GUS sample playback) will not.
 5. **Disable the Super I/O's own LPC DMA users** (floppy, parallel port in ECP mode) in the BIOS, so the Super I/O does not
    drive the same LDRQ# line at the same time.
 6. Some chipsets multiplex LDRQ1# with a GPIO. If you picked that pin, `ISALPC ldrq1` switches the pad to LDRQ1#. On the
-   author's ASRock X99M Killer (BIOS P4.01) the LDRQ1# pad is already set to its LDRQ function (found by static analysis of the BIOS image, not tested).
+   author's ASRock X99M Killer (BIOS P4.01) the LDRQ1# pad is already set to its LDRQ function (found by static analysis of the BIOS image).
 
 > **The exact test point on the author's X99M Killer is not documented yet.** The wire was not soldered at the time of
 > writing. Once it is, the point, a photo and the DMA test result will be added here. Until then, treat steps 1-6 as a

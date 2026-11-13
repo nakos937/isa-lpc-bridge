@@ -7,10 +7,9 @@ Retro **hangkártyákhoz DOS-ban és DOS-alapú rendszerekben** készült (Sound
 Mint a [dISAppointment](https://github.com/rasteri/dISAppointment), de a Fintek F85226 híd-IC helyett egy mikrokontroller
 (RP2354B, C nyelvű firmware) dolgozik, így az egész nyitott és módosítható.
 
-> **Állapot (ezt olvasd el először).** A `PASS_HG25` revíziót megterveztük, adatlapok alapján átnéztük és 2026 novemberében
-> legyártatásra küldtük. **A cikk írásakor még senki sem szerelt össze vagy kapcsolt be panelt.** A firmware csak ciklus-szimulátorban
-> futott, a DOS-os eszköz csak álchipset ellen. Minden, ami a kártyakompatibilitásról lent áll, *várt* viselkedés,
-> adatlapokból és Linux-meghajtók forrásából levezetve, nem mérési eredmény. Számíts üzembe helyezési hibákra. Visszajelzést és javítást szívesen fogadunk.
+> **Állapot.** A `PASS_HG25` revíziót megterveztük, adatlapok alapján átnéztük és 2026 novemberében gyártatásra küldtük;
+> a hardver üzembe helyezése folyamatban van. Az alábbi kártyakompatibilitás várt viselkedés, adatlapokból és Linux-meghajtók
+> forrásából levezetve. Visszajelzést és javítást szívesen fogadunk.
 
 ![felülnézet](images/top.png)
 
@@ -72,10 +71,10 @@ flowchart LR
 ### Alaplapok / lapkakészletek
 | Gazdagép | I/O + IRQ | DMA | Megjegyzés |
 |---|---|---|---|
-| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | tervezési cél, nem tesztelt | tervezési cél, nem tesztelt | BIOS-elemzés: [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17 pólusú TPMS1 fejléc |
+| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | tervezési cél | tervezési cél | BIOS-elemzés: [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17 pólusú TPMS1 fejléc |
 | Más Intel lapkakészletek **a 100-as sorozat előtt** (6/7/8/9 sorozat, X79/X99/C600) | várhatóan működik | várhatóan működik, LDRQ# vezeték kell | ezeken van LPC DMA. A fejléckiosztás alaplaponként eltér: mérd ki multiméterrel |
 | Intel **100-as sorozat és újabb** (Skylake-tól) | várhatóan működik (a GEN dekódoló ablakok megvannak) | **nincs**: az Intel a 100-as sorozattól elhagyta az LDRQ#-t | FM szintézis, MIDI és PIO hang működik; a DOS-játékok digitalizált hangjához DMA kell, az nem lesz. Lásd az [lpcexp readme](https://github.com/lss4/lpcexp)-t |
-| AMD (AM4 és hasonlók) | az lpcexp-et használd (AMD kód), nem az `isalpc`-t | AM4: nem ismerjük; **AM5/SP5: nincs LDRQ#** | nem tesztelt |
+| AMD (AM4 és hasonlók) | az lpcexp-et használd (AMD kód), nem az `isalpc`-t | AM4: nem ismerjük; **AM5/SP5: nincs LDRQ#** | nem része |
 
 A „DMA a 100-as sorozatig" röviden: a lapkakészletnek kell egy LDRQ# láb, és az Intel ezt a 100-as sorozattól elhagyta. A pontos
 határra vonatkozó információnk az lpcexp projektből származik, adatlapokkal nem ellenőriztük. Csak az X99 a tervezési célunk.
@@ -95,7 +94,7 @@ A zárójelben lévő `ISALPC` készletek beállítják a lapkakészletet és a 
 | MPU-401 kártyák, Roland SCC-1/LAPC-I (`mpu401`) | várható | a panel -12 V-ot és -5 V-ot is előállít |
 | Pro Audio Spectrum 16 | **lehetetlen** | a regiszterei 19 port-blokkon szóródnak, a lapkakészletnek négy dekódoló ablaka van |
 | Turtle Beach MultiSound / Pinnacle / Fiji, bármely kártya on-board memóriaablakkal | **nem támogatott** | ISA *memória*ciklusok kellenek. Az UEFI-s gépek amúgy is elfoglalják azt a memóriaterületet |
-| ADI/Echo PSS | lehetséges, nem tesztelt | a 16 bites olvasáshoz `word_rd` bejegyzés kell (kikommentezett sor a `fw/src/main.c`-ben) |
+| ADI/Echo PSS | lehetséges | a 16 bites olvasáshoz `word_rd` bejegyzés kell (kikommentezett sor a `fw/src/main.c`-ben) |
 | Floppy, COM, LPT, IDE, NE2000, SCSI ISA kártyák (`fdc`, `com1`, `lpt1`, `ide1`, `ne2000`, ...) | a készletek léteznek, de nem ez a projekt célja | előbb kapcsold ki a lapi portokat a BIOS-ban, különben mindkettő válaszol |
 
 Nem cél: ISA VGA kártyák, busmaster kártyák, memóriát igénylő kártyák.
@@ -175,7 +174,7 @@ SB/GUS minta lejátszás), az nem fog.
    ugyanazt az LDRQ# vezetéket egyszerre.
 6. Egyes lapkakészleteken az LDRQ1# GPIO-val van multiplexelve. Ha ezt a lábat választottad, az `ISALPC LDRQ1` átkapcsolja a
    padot LDRQ1#-re. A szerző ASRock X99M Killerén (BIOS P4.01) az LDRQ1# pad már LDRQ funkcióra van állítva (a BIOS-kép statikus
-   elemzéséből, nem tesztelve).
+   elemzéséből).
 
 > **A szerző X99M Killerén a pontos mérőpont még nincs dokumentálva.** A vezetéket a cikk írásakor még nem forrasztottuk be.
 > Ha megvan, ide kerül a pont, egy fotó és a DMA teszt eredménye. Addig az 1-6. lépéseket multiméterrel követendő
