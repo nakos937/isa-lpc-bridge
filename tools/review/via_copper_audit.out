@@ -1,0 +1,23 @@
+2026-11-12, via_copper_audit.py (JLC limits: hole to other-net copper 0.2, hole to hole 0.2, copper to copper 0.09)
+PASS_HG25.kicad_pcb
+  hole to hole                                 min 0.3523 mm at (74.5, 16.95)   below limit: 0
+  hole to other-net pad copper (inner)         min 0.2700 mm at (109.85, 5.1)   below limit: 0
+  hole to other-net pad copper (outer)         min 0.2250 mm at (148.8, 11.0)   below limit: 0
+  hole to other-net track                      min 0.2250 mm at (118.5, 18.4)   below limit: 0
+  hole to other-net via copper                 min 0.2273 mm at (74.5, 16.95)   below limit: 0
+  hole to other-net zone copper B.Cu           min 0.2155 mm at (6.0, 18.4)   below limit: 0
+  hole to other-net zone copper In1.Cu         min 0.2155 mm at (6.0, 18.4)   below limit: 0
+  track to other-net track                     min 0.1000 mm at (135.7, 5.8)   below limit: 0
+  via copper to other-net track                min 0.1000 mm at (118.5, 18.4)   below limit: 0
+  via copper to other-net via copper           min 0.1023 mm at (74.5, 16.95)   below limit: 0
+CAND_HG25_via03.kicad_pcb
+  hole to hole                                 min 0.2506 mm at (64.898, 17.419)   below limit: 0
+  hole to other-net pad copper (inner)         min 0.2067 mm at (109.837, 5.096)   below limit: 0
+  hole to other-net pad copper (outer)         min 0.1750 mm at (148.8, 11.0)   below limit: 5
+  hole to other-net track                      min 0.1996 mm at (79.102, 22.1)   below limit: 1
+  hole to other-net via copper                 min 0.1756 mm at (64.898, 17.419)   below limit: 42
+  hole to other-net zone copper B.Cu           min 0.1655 mm at (6.0, 18.4)   below limit: 1181
+  hole to other-net zone copper In1.Cu         min 0.1655 mm at (6.0, 18.4)   below limit: 1078
+  track to other-net track                     min 0.0939 mm at (148.55, 12.4)   below limit: 0
+  via copper to other-net track                min 0.1246 mm at (79.102, 22.1)   below limit: 0
+  via copper to other-net via copper           min 0.1006 mm at (64.898, 17.419)   below limit: 0

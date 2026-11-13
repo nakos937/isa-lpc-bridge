@@ -1,0 +1,56 @@
+; LDRQ# and SERIRQ engines (PIO2, GPIO base 16). IN base = LAD0: LAD0-3 = pins 0-3, LFRAME# = 4, LCLK = 5, SERIRQ = 6.
+.pio_version 1
+
+; ---------------------------------------------------------------------------------------------
+; LDRQ#: one 6 clock message per FIFO word, LSB first, aligned to the rising edge of LCLK:
+;   bit0 start (0), bit1..3 channel MSB first, bit4 ACT (1 = request), bit5 = 1 (stop, idle level)
+; OUT pin = LDRQ# (GPIO47). The pin idles high: the CPU executes `set pins,1` and enables the output before the SM starts.
+; ---------------------------------------------------------------------------------------------
+.program ldrq
+.wrap_target
+    pull block
+    set x, 5
+bit:
+    wait 0 pin 5
+    wait 1 pin 5
+    out pins, 1
+    jmp x--, bit
+.wrap
+
+; ---------------------------------------------------------------------------------------------
+; SERIRQ slave, continuous mode. OUT/SET pin = SERIRQ (GPIO46).
+; Counts frames from the rising edge of the start pulse: IRQ0 sample phase is 2 clocks after it
+; (Intel PCH data frame table, Fintek F85226 "clocks after start finished"). 17 frames: IRQ0..IRQ15, IOCHCK#.
+; TX FIFO word = frame mask (bit n = 1: drive SERIRQ low in frame n: ISA IRQ line low, or IOCHCK# asserted); when the FIFO is empty
+; the previous mask (kept in X) is used. The pin value latch is kept low; the output is only enabled in sample phase.
+; ---------------------------------------------------------------------------------------------
+.program serirq
+.side_set 1 opt
+.wrap_target
+public start:
+    wait 0 pin 6        ; start pulse
+    wait 1 pin 6        ; rising edge = clock 0
+    wait 0 pin 5
+    wait 1 pin 5        ; clock 1
+    pull noblock        ; OSR = new mask or X
+    mov x, osr
+    set y, 16
+frame:
+    wait 0 pin 5
+    wait 1 pin 5        ; sample phase
+    out pindirs, 1
+    wait 0 pin 5
+    wait 1 pin 5        ; recovery phase
+    set pins, 1
+    wait 0 pin 5
+    wait 1 pin 5        ; turn-around phase
+    set pindirs, 0 side 0   ; release; the latch goes back low for the next sample phase
+    jmp y--, frame
+stop:
+    wait 0 pin 6        ; stop pulse (2 or 3 clocks low) or a device in frame 17 and up (1 clock low)
+    wait 0 pin 5
+    wait 1 pin 5
+    wait 0 pin 5        ; middle of the next clock
+    jmp pin stop        ; high again: a frame, not the stop pulse
+    wait 1 pin 6
+.wrap

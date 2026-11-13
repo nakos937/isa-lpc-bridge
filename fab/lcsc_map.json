@@ -1,0 +1,384 @@
+{
+ "RP2354B|QFN-80-1EP_10x10mm_P0.4mm_EP3.4x3.4mm": {
+  "mpn": "RP2354B",
+  "lcsc": "C39843328",
+  "src": "LCSC/JLC listing (search 2026-11-08), 500-piece reels"
+ },
+ "ADP5071AREZ|ETSSOP-20-1EP_4.4x6.5mm_P0.65mm_EP3x4.2mm": {
+  "mpn": "ADP5071AREZ-R7",
+  "lcsc": "C659270",
+  "src": "LCSC listing"
+ },
+ "AP7361C-33E|SOT-223-3_TabPin2": {
+  "mpn": "AP7361C-33E-13",
+  "lcsc": "C500795",
+  "src": "LCSC listing"
+ },
+ "MC79M05CDTG|TO-252-3_TabPin2": {
+  "mpn": "MC79M05CDTRKG (onsemi, tape and reel)",
+  "lcsc": "C51416",
+  "src": "JLC library: DPAK-3, 4605 in stock, 0.2779 USD at 1; same die and package as MC79M05CDTG (C73400 has stock 0)"
+ },
+ "SN74LVCC4245A|TSSOP-24_4.4x7.8mm_P0.65mm": {
+  "mpn": "SN74LVCC4245APWR",
+  "lcsc": "C7035",
+  "src": "LCSC listing, 8 in stock"
+ },
+ "SN74AHCT595|DHVQFN-16-1EP_2.5x3.5mm_P0.5mm_EP1x2mm": {
+  "mpn": "SN74AHCT595BQBR (TI)",
+  "lcsc": "C31346359",
+  "src": "JLC library: WQFN-16 2.5x3.5, 5951 in stock, 0.4694 USD at 1; TI BQB0016A is the footprint this board was built for (Nexperia C554702 has stock 0)"
+ },
+ "SN74HCT138|DHVQFN-16-1EP_2.5x3.5mm_P0.5mm_EP1x2mm": {
+  "mpn": "74HCT138BQ (Nexperia)",
+  "lcsc": "",
+  "src": "no LCSC listing found"
+ },
+ "SN74LVC165A|DHVQFN-16-1EP_2.5x3.5mm_P0.5mm_EP1x2mm": {
+  "mpn": "SN74LVC165AWBQBRQ1 (TI, automotive, wettable flank)",
+  "lcsc": "C33901164",
+  "src": "BQB WQFN-16 3.5 x 2.5 mm per its datasheet package table (same outline as our footprint), 5754 in stock, 0.2553 USD; JLC parts library / LCSC page 2026-11-08",
+  "bom_comment": "SN74LVC165AWBQBRQ1",
+  "bom_footprint": "WQFN-16(2x3)"
+ },
+ "SN74AHCT244|DHVQFN-20-1EP_2.5x4.5mm_P0.5mm_EP1x3mm": {
+  "mpn": "74AHCT244BQ,115 (Nexperia)",
+  "lcsc": "C554604",
+  "src": "DHVQFN-20-EP 2.5 x 4.5, 492 in stock, 0.6796 USD (user table); JLC parts library / LCSC page 2026-11-08"
+ },
+ "12MHz ABM8-272-T3|Crystal_SMD_3225-4Pin_3.2x2.5mm": {
+  "mpn": "ABM8-272-T3",
+  "lcsc": "C20625731",
+  "src": "JLC/LCSC listing"
+ },
+ "ASE-14.31818MHZ-L-C-T|Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm": {
+  "mpn": "OXETGLJANF-14.31818MHZ (Taitien)",
+  "lcsc": "C295523",
+  "src": "datasheet read: 3.2x2.5 mm, pad pitch 2.10 x 1.60 (ours 2.10 x 1.65), pin 1 tri-state (high or open = on), 2 GND, 3 OUT, 4 VDD, 3.3 V +-10 %, jitter 1 ps RMS; LCSC lists +-50 ppm, 1956 in stock, 0.5299 USD (ASE C1987734: stock 0, 1.25 USD)"
+ },
+ "3.3u AOTA-B201610S3R3-101-T|L_Abracon_AOTA-B201610S3R3-101-T": {
+  "mpn": "AOTA-B201610S3R3-101-T",
+  "lcsc": "C42411119",
+  "src": "LCSC listing"
+ },
+ "15u XAL4040-153ME|L_Coilcraft_XAL4040-XXX": {
+  "mpn": "XAL4040-153MEC",
+  "lcsc": "C5144882",
+  "src": "LCSC listing"
+ },
+ "BLM31KN601SN1L|L_1206_3216Metric": {
+  "mpn": "BLM31KN601SH1L",
+  "lcsc": "C237603",
+  "src": "JLC library 2026-11-11: 215 in stock; same Murata part in the SH grade (600 ohm, 2.9 A, 38 mohm). C668306 (SN1L) had 2 left, 3 needed per board"
+ },
+ "BLM21PG221SN1D|L_0805_2012Metric": {
+  "mpn": "BLM21PG221SN1D",
+  "lcsc": "C85840",
+  "src": "LCSC listing"
+ },
+ "22u/25V|C_1210_3225Metric": {
+  "mpn": "GRM32ER71E226KE15L (X7R)",
+  "lcsc": "C21397",
+  "src": "LCSC listing (X5R C65428 is NRND)"
+ },
+ "10u/50V|C_1210_3225Metric": {
+  "mpn": "CL31A106KBHNNNE (Samsung, 50 V X5R, 1206 body)",
+  "lcsc": "C13585",
+  "src": "Basic, same part as C2/C4 etc. A 1206 body on the 1210 footprint (same 3.2 mm length, lands overlap the terminations); replaces Extended C77102 (HG23)"
+ },
+ "47u/10V|C_1210_3225Metric": {
+  "mpn": "LMK325B7476KM-PR (Taiyo Yuden)",
+  "lcsc": "C20486249",
+  "src": "1210 47 uF 10 V X7R, 5046 in stock, 0.2596 USD; Murata GRM32ER71A476 curve read earlier (-42 % at 5 V), Taiyo curve not read; JLC parts library search 2026-11-08"
+ },
+ "1812L260/12MR|Fuse_1812_4532Metric": {
+  "mpn": "1812L260/12MR",
+  "lcsc": "C151171",
+  "src": "LCSC page: 2.6 A hold, 5 A trip, 12 V; 815 in stock (snapshot)"
+ },
+ "1812L150/24MR|Fuse_1812_4532Metric": {
+  "mpn": "1812L150/24MR",
+  "lcsc": "C142805",
+  "src": "LCSC page lists this MPN: 1.5 A hold, 3 A trip, 24 V; 29k-57k in stock (snapshots)"
+ },
+ "ISA_16bit_Socket|ISA": {
+  "mpn": "ED98KBGFBK (WingTAT)",
+  "lcsc": "C5173323",
+  "src": "user-chosen cheapest: LCSC 1.2275 USD at 1 (1.021 at 10), 29 in stock; JLC library Extended, assembly type Wave Soldering. Datasheet pattern = our ISA footprint (row 5.08, pitch 2.54, 31 + 10.16 gap + 18, span 129.54, hole 1.0). Contact: brass, 1 microinch gold flash (code BGF). Alternative with 10 microinch gold on phosphor bronze: Sullins EBC49DCWN-S420 C4883475 (6.16 USD, stock 0 pre-sale)"
+ },
+ "Berg_Floppy_Power_4P|Berg_171826-4_1x04_P2.50mm": {
+  "mpn": "171826-4 (TE)",
+  "lcsc": "C590635",
+  "src": "LCSC page: right angle 1x4P 2.5 mm, through hole, 10975 in stock, 0.4868 USD; JLC parts library: Extended, assembly type Wave Soldering"
+ },
+ "8.2k|R_Array_Convex_4x0402": {
+  "mpn": "4D02WGJ0822TCE (Uniroyal)",
+  "lcsc": "C26079",
+  "src": "LCSC listing"
+ },
+ "68|R_Array_Convex_4x0402": {
+  "mpn": "4D02WGJ0680TCE (Uniroyal)",
+  "lcsc": "C52984",
+  "src": "LCSC listing"
+ },
+ "74LVC2G74|VSSOP-8_2.3x2mm_P0.5mm": {
+  "mpn": "SN74LVC2G74DCUR",
+  "lcsc": "C7851",
+  "src": "LCSC listing"
+ },
+ "74AHCT1G125|SOT-23-5": {
+  "mpn": "SN74AHCT1G125DBVR",
+  "lcsc": "C7484",
+  "src": "LCSC listing"
+ },
+ "74AHCT1G00|SOT-23-5": {
+  "mpn": "SN74AHCT1G00DBVR",
+  "lcsc": "C473380",
+  "src": "LCSC listing"
+ },
+ "SMAJ5.0A|D_SMA": {
+  "mpn": "SMAJ5.0A",
+  "lcsc": "C2925443",
+  "src": "Preferred, SMA 400 W 5 V standoff, Vc 9.2 V at 43.5 A; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "SMAJ13A|D_SMA": {
+  "mpn": "SMAJ13A",
+  "lcsc": "C19077533",
+  "src": "Preferred, SMA 400 W 13 V standoff, Vc 21.5 V at 18.6 A; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "SMF12A|D_SOD-123FL_1.1x1.5": {
+  "mpn": "SMF12A",
+  "lcsc": "C19077506",
+  "src": "Preferred, SOD-123FL 200 W 12 V standoff, VBR 14.7 V, Vc 19.9 V at 10.1 A (same figures as the Littelfuse sheet read earlier); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "100n|C_0402_1005Metric": {
+  "mpn": "CL05B104KO5NNNC",
+  "lcsc": "C1525",
+  "src": "Basic part, 0.0031 USD; JLC parts library search 2026-11-08"
+ },
+ "4.7u/10V|C_0402_1005Metric": {
+  "mpn": "CL05A475MP5NRNC",
+  "lcsc": "C23733",
+  "src": "Basic part, 0.0118 USD; JLC parts library search 2026-11-08"
+ },
+ "1u/16V|C_0402_1005Metric": {
+  "mpn": "CL05A105KA5NQNC (25 V part)",
+  "lcsc": "C52923",
+  "src": "Basic part, 0.0058 USD, rated 25 V (>= 16 V); JLC parts library search 2026-11-08"
+ },
+ "1u/25V|C_0402_1005Metric": {
+  "mpn": "CL05A105KA5NQNC",
+  "lcsc": "C52923",
+  "src": "Basic part, 0.0058 USD; JLC parts library search 2026-11-08"
+ },
+ "15p|C_0402_1005Metric": {
+  "mpn": "0402CG150J500NT",
+  "lcsc": "C1548",
+  "src": "Basic part, 15 pF C0G 50 V +-5 %, 0.0026 USD; JLC parts library search 2026-11-08"
+ },
+ "47n|C_0402_1005Metric": {
+  "mpn": "0402B473K160NT",
+  "lcsc": "C192385",
+  "src": "Extended, 16 V X7R, 58412 in stock, 0.0023 USD; JLC parts library search 2026-11-08"
+ },
+ "33|R_0402_1005Metric": {
+  "mpn": "0402WGF330JTCE",
+  "lcsc": "C25105",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "100|R_0402_1005Metric": {
+  "mpn": "0402WGF1000TCE",
+  "lcsc": "C25076",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "1k|R_0402_1005Metric": {
+  "mpn": "0402WGF1001TCE",
+  "lcsc": "C11702",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "4.7k|R_0402_1005Metric": {
+  "mpn": "0402WGF4701TCE",
+  "lcsc": "C25900",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "10k|R_0402_1005Metric": {
+  "mpn": "0402WGF1002TCE",
+  "lcsc": "C25744",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "15k|R_0402_1005Metric": {
+  "mpn": "0402WGF1502TCE",
+  "lcsc": "C25756",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "200k|R_0402_1005Metric": {
+  "mpn": "0402WGF2003TCE",
+  "lcsc": "C25764",
+  "src": "Basic, 1 %; JLC parts library search 2026-11-08"
+ },
+ "43k|R_0402_1005Metric": {
+  "mpn": "HRC0402F4302DNTO",
+  "lcsc": "C54920674",
+  "src": "Extended, 1 % (EN2 divider); JLC parts library search 2026-11-08"
+ },
+ "57.6k|R_0402_1005Metric": {
+  "mpn": "0402WGF5762TCE",
+  "lcsc": "C26983",
+  "src": "Extended, 1 % (feedback); JLC parts library search 2026-11-08"
+ },
+ "931k|R_0402_1005Metric": {
+  "mpn": "0402WGF9313TCE",
+  "lcsc": "C27021",
+  "src": "Extended, 1 % (feedback); JLC parts library search 2026-11-08"
+ },
+ "33|R_Array_Convex_4x0402": {
+  "mpn": "4D02WGJ0330TCE",
+  "lcsc": "C25501",
+  "src": "Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)"
+ },
+ "1k|R_Array_Convex_4x0402": {
+  "mpn": "4D02WGJ0102TCE",
+  "lcsc": "C25726",
+  "src": "Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)"
+ },
+ "4.7k|R_Array_Convex_4x0402": {
+  "mpn": "4D02WGJ0472TCE",
+  "lcsc": "C29586",
+  "src": "Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)"
+ },
+ "PROG_SWD|PinHeader_1x04_P2.54mm_Horizontal": {
+  "mpn": "2.54-1*4P reverse bent pin header (BOOMELE)",
+  "lcsc": "C91552",
+  "src": "right angle 1x4P 2.54 mm, gold, brass, square pin, mating 6 mm, insulation height 2.54 mm; JLC in-house stock 607 (stock 17693), 0.0143 USD at 1: cheapest candidate with in-house stock in the LCSC list the user pasted (172 codes, none Basic/Preferred; the whole Basic+Preferred library has no connector); swapped 2026-11-09, previous C32713263 (hanxia, 0.0189, in-house 215), originally C42431821"
+ },
+ "22u/10V|C_1206_3216Metric": {
+  "mpn": "CL31A226KPHNNNE (Samsung)",
+  "lcsc": "C5672",
+  "src": "Preferred part, 1206 22 uF 10 V X5R, 200985 in stock, 0.0738 USD; DC-bias not compared; JLC parts library search 2026-11-08"
+ },
+ "22u/10V|C_1210_3225Metric": {
+  "mpn": "CL32B226KOJNNNE (Samsung, 16 V X7R)",
+  "lcsc": "C55530",
+  "src": "1210 22 uF, rated 16 V (>= 10 V), 61817 in stock, 0.1297 USD; DC-bias not compared; JLC parts library search 2026-11-08"
+ },
+ "22u/16V|C_1210_3225Metric": {
+  "mpn": "CL32B226KOJNNNE (Samsung)",
+  "lcsc": "C55530",
+  "src": "1210 22 uF 16 V X7R, 61817 in stock, 0.1297 USD; DC-bias not compared; JLC parts library search 2026-11-08"
+ },
+ "10u/25V|C_1206_3216Metric": {
+  "mpn": "CL31A106KBHNNNE (Samsung, 50 V X5R)",
+  "lcsc": "C13585",
+  "src": "Basic, 10 uF 50 V X5R 1206 (50 V part keeps more capacitance at 12 V than the 25 V part); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "10u/25V|C_1210_3225Metric": {
+  "mpn": "CL32B106KAJNNNE (Samsung)",
+  "lcsc": "C39232",
+  "src": "1210 10 uF 25 V X7R, 158578 in stock, 0.1075 USD; DC-bias not compared; JLC parts library search 2026-11-08"
+ },
+ "10u/10V|C_0805_2012Metric": {
+  "mpn": "CL21A106KAYNNNE (Samsung, 25 V X5R)",
+  "lcsc": "C15850",
+  "src": "Basic, 10 uF 25 V X5R 0805 (25 V part keeps more capacitance at 3.3/5 V than the 10 V part); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "ADP5071ACPZ|LFCSP-20-1EP_4x4mm_P0.5mm_EP2.6x2.6mm": {
+  "mpn": "ADP5071ACPZ-R7",
+  "lcsc": "C481889",
+  "src": "LFCSP-20 4x4 (CP-20-8), 193 in stock, 7.29 USD; datasheet Table 5 pin mapping applied in build.py; JLC parts library 2026-11-08"
+ },
+ "15u NR4030S150MT|L_NR4030": {
+  "mpn": "NR4030S150MT (Magnetsyc)",
+  "lcsc": "C28642356",
+  "src": "4x4 mm, land pattern a 1.9 b 1.1 c 3.7 from its datasheet (footprint L_NR4030), 2269 in stock, 0.0385 USD, 15 uH, Isat 1.8 A, Irms 1.2 A, DCR 213 mohm (JLC attributes); JLC parts library 2026-11-08"
+ },
+ "SN74LVC4245A|TSSOP-24_4.4x7.8mm_P0.65mm": {
+  "mpn": "SN74LVC4245APWR (TI)",
+  "lcsc": "C7859",
+  "src": "Preferred JLC part, TSSOP-24, 61167 in stock, 0.5185 USD; pin 23 = VCCB tied to +3V3 (datasheet SCAS375K); JLC parts library 2026-11-08"
+ },
+ "BL9110-330BPFB|SOT-223-3_TabPin2": {
+  "mpn": "BL9110-330BPFB (Belling)",
+  "lcsc": "C169246",
+  "src": "SOT-223-3-B: 1 GND, 2 VOUT + tab, 3 VIN (datasheet page 2); 28511 in stock, 0.1625 USD, 3.3 V 1 A, dropout 110 mV at 1 A, 45 uVrms, output cap 2.2 uF ceramic; same pad order as Diodes AP7361C-33ER-13 (C3743528, 0.61 USD, 1547 in stock) if a Diodes part is wanted; JLC parts library / LCSC page 2026-11-08"
+ },
+ "74AHCT138|TSSOP-16_4.4x5mm_P0.65mm": {
+  "mpn": "74AHCT138PW,118 (Nexperia)",
+  "lcsc": "C554525",
+  "src": "TSSOP-16, 307 in stock, 0.2311 USD (user table); the DHVQFN-16 138 has no stock; JLC parts library / LCSC page 2026-11-08"
+ },
+ "TPMS1_LPC|PinHeader_2x09_P2.54mm_Horizontal": {
+  "mpn": "HX PZ2.54-2x9P WC-A",
+  "lcsc": "C41417357",
+  "src": "LCSC page: right angle, 2 rows, 18P, 2.54 mm, plastic height 2.5 mm, mating pin 6 mm, tail 3 mm, 885 in stock, 0.1427 USD; JLC parts library / LCSC page 2026-11-08"
+ },
+ "DFLS240|D_SOD-123FL_1.1x1.5": {
+  "mpn": "DSK24",
+  "lcsc": "C22466352",
+  "src": "Preferred, SOD-123FL Schottky 2 A 40 V, 550 mV at 2 A, 500 uA at 40 V; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "47k|R_0402_1005Metric": {
+  "mpn": "0402WGF4702TCE",
+  "lcsc": "C25792",
+  "src": "Basic, 1 %; EN2 divider 200k/47k gives 2.28 V from 12 V (threshold 1.15 V, abs max 6 V); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "10k|R_Array_Convex_4x0402": {
+  "mpn": "4D02WGJ0103TCE",
+  "lcsc": "C25725",
+  "src": "Preferred, 4x0402 10 k +-5 %; replaces the 8.2 k arrays of the dISAppointment pull list; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee"
+ },
+ "330k|R_0402_1005Metric": {
+  "mpn": "0402WGF3303TCE",
+  "lcsc": "C25778",
+  "src": "Preferred, 1 %; ADP5071 inverter feedback top resistor, 330k/20k gives VNEG = 0.8 - 0.8*16.5 = -12.40 V (datasheet formula; -12.067 V reproduced for its 1.15M/71.5k row); 1 % parts move it -12.14 to -12.67 V worst case; JLC library 2026-11-08"
+ },
+ "20k|R_0402_1005Metric": {
+  "mpn": "0402WGF2002TCE",
+  "lcsc": "C25765",
+  "src": "Basic, 1 %; ADP5071 inverter feedback bottom resistor; JLC library 2026-11-08"
+ },
+ "47u/10V|C_1206_3216Metric": {
+  "mpn": "CL31A476MPHNNNE (Samsung, 10 V X5R)",
+  "lcsc": "C96123",
+  "src": "Basic, 47 uF 10 V X5R 1206 ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it"
+ },
+ "22u/25V|C_1206_3216Metric": {
+  "mpn": "CL31A226KAHNNNE (Samsung, 25 V X5R)",
+  "lcsc": "C12891",
+  "src": "Basic, 22 uF 25 V X5R 1206 ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it"
+ },
+ "22u/16V|C_1206_3216Metric": {
+  "mpn": "CL31A226KAHNNNE (Samsung, 25 V X5R)",
+  "lcsc": "C12891",
+  "src": "Basic, 22 uF 25 V X5R 1206 on -5V_SLOT ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it"
+ },
+ "1.15M|R_0402_1005Metric": {
+  "mpn": "WR04W1154FTL (Walsin)",
+  "lcsc": "C368337",
+  "src": "Extended, 1 %, 5385 in stock; ADP5071 datasheet inverting row RFT2 = 1.15 MOhm with RFB2 71.5 kOhm = -12.067 V; JLC library 2026-11-08"
+ },
+ "71.5k|R_0402_1005Metric": {
+  "mpn": "0402WGF7152TCE",
+  "lcsc": "C43534",
+  "src": "Extended, 1 %, 150237 in stock; RFB2 for the datasheet -12.067 V row; JLC library 2026-11-08"
+ },
+ "22n|C_0402_1005Metric": {
+  "mpn": "0402B223K500NT (Fenghua, 22 nF 50 V X7R)",
+  "lcsc": "C1532",
+  "src": "Basic; CC2 of the ADP5071 inverter (HG23, was 47 nF Extended)"
+ },
+ "1M|R_0402_1005Metric": {
+  "mpn": "0402WGF1004TCE",
+  "lcsc": "C26083",
+  "src": "Basic, 1 %; ADP5071 RFT2 (HG23)"
+ },
+ "62k|R_0402_1005Metric": {
+  "mpn": "0402WGF6202TCE",
+  "lcsc": "C37825",
+  "src": "Extended, 1 %, 419297 in stock; ADP5071 RFB2: 1M/62k gives -12.10 V (HG23); no Basic/Preferred pair reaches -12 V"
+ },
+ "10u/50V|C_1206_3216Metric": {
+  "mpn": "CL31A106KBHNNNE (Samsung, 50 V X5R, 1206 body)",
+  "lcsc": "C13585",
+  "src": "Basic, same part as C2/C4 etc.; HG24 gives C25 a 1206 land to match"
+ }
+}

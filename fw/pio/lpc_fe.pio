@@ -1,0 +1,54 @@
+; LPC target front end (PIO0, GPIO base 16).
+;
+; Pin map (IN base = LAD0 = GPIO40): LAD0-3 = pins 0-3, LFRAME# = 4, LCLK = 5, SERIRQ = 6, LDRQ# = 7.
+; Samples every LAD nibble on the falling edge of LCLK (host data is stable there, 15 ns after launch),
+; collects the cycle into one 32 bit word, pushes it and raises IRQ 0 of the next PIO (lpc_tx).
+;
+; Word layout. ISR is preset to all ones at START and shifts left, so the unused top bits stay 1:
+;   I/O write  : [31:28]=F  [27:24] type 2   [23:8] address   [7:4] data low nibble  [3:0] data high nibble
+;   I/O read   : [31:20]=F  [19:16] type 0   [15:0] address
+;   DMA read   : [31:20]=F  [19:16] type 8   [15:12] channel (+TC in bit 15)  [11:8] size  [7:4] data lo  [3:0] data hi (host -> peripheral)
+;   DMA write  : [31:12]=F  [11:8] type A     [7:4] channel (+TC in bit 7)     [3:0] size                  (peripheral -> host)
+; Reads / DMA read / DMA write: the response starts 3 rising edges after the last sampled clock; lpc_tx does it.
+;
+; Only START 0000 is taken (sampled in the first LFRAME# clock): TPM (0101), firmware hub and bus master cycles are skipped.
+; The dispatch table sits in slots 16..31 (mov pc, isr: ISR[4:0] = 1 + CYCTYPE nibble): this program MUST be loaded at offset 0.
+.pio_version 1
+.program lpc_fe
+
+.wrap_target
+public idle:
+    wait 0 pin 4        ; LFRAME# low: START
+    wait 0 pin 5        ; low half of that clock
+    mov osr, pins
+    out y, 4            ; START nibble
+    wait 1 pin 4        ; LFRAME# high: the next clock carries CYCTYPE
+    jmp y--, idle       ; not a target cycle
+    mov isr, !null      ; all ones: the position of the leading ones tells the cycle type apart
+    wait 0 pin 5        ; falling edge of that clock
+    in pins, 4
+    mov pc, isr         ; dispatch on the nibble
+coll:
+    wait 1 pin 5
+    wait 0 pin 5
+    in pins, 4
+    jmp x--, coll
+    push
+    irq next set 0      ; wakes lpc_tx
+.wrap
+    set x, 3            ; 16 type 0000 I/O read      : 4 address nibbles
+    jmp coll            ; 17
+    set x, 5            ; 18 type 0010 I/O write     : 4 address + 2 data nibbles
+    jmp coll            ; 19
+    jmp idle            ; 20 type 0100 memory read   : not ours
+    jmp idle            ; 21
+    jmp idle            ; 22 type 0110 memory write  : not ours
+    jmp idle            ; 23
+    set x, 3            ; 24 type 1000 DMA read      : channel, size, 2 data nibbles
+    jmp coll            ; 25
+    set x, 1            ; 26 type 1010 DMA write     : channel, size
+    jmp coll            ; 27
+    jmp idle            ; 28
+    jmp idle            ; 29
+    jmp idle            ; 30
+    jmp idle            ; 31

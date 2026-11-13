@@ -1,0 +1,22 @@
+{
+ "J3": {
+  "center": "pads",
+  "rot_offset": -90,
+  "why": "JLC model of C5173323 has its long axis along X and its origin at the body centre; the KiCad footprint origin is 63.5 mm off the pad centre and the footprint is rotated 90 degrees. Confirmed in the JLC preview."
+ },
+ "J2": {
+  "center": "pads",
+  "rot_offset": 90,
+  "why": "Right-angle header, same JLC model frame as J3 inferred from the preview: long axis along X, mating pins towards the top of the board at rotation 0, origin at the pad-array centre. Needed rotation = angle that turns 'up' into the footprint's mating direction (up 0, left 90, down 180, right 270). Not yet confirmed in the preview. Footprint mating direction: up (body offset dy -4.39). Flipped by 180 degrees after the JLC preview (user), so the model frame is mating pins down at rotation 0."
+ },
+ "J4": {
+  "center": "pads",
+  "rot_offset": 90,
+  "why": "Right-angle header, same JLC model frame as J3 inferred from the preview: long axis along X, mating pins towards the top of the board at rotation 0, origin at the pad-array centre. Needed rotation = angle that turns 'up' into the footprint's mating direction (up 0, left 90, down 180, right 270). Not yet confirmed in the preview. Footprint mating direction: right (body offset dx +4.39). Flipped by 180 degrees after the JLC preview (user), so the model frame is mating pins down at rotation 0."
+ },
+ "J1": {
+  "center": "pads",
+  "rot_offset": 180,
+  "why": "Right-angle header, same JLC model frame as J3 inferred from the preview: long axis along X, mating pins towards the top of the board at rotation 0, origin at the pad-array centre. Needed rotation = angle that turns 'up' into the footprint's mating direction (up 0, left 90, down 180, right 270). Not yet confirmed in the preview. Footprint mating direction: down (body offset dy +3.0)."
+ }
+}

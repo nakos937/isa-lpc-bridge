@@ -1,0 +1,5 @@
+skidl==3.0.0
+kinet2pcb==1.1.4
+pypdf==6.21.2
+pymupdf==2.0
+cryptography==50.0.2
