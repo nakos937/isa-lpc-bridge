@@ -190,8 +190,8 @@ DMA (digitised sound in DOS games, SB/GUS sample playback) will not.
 8. Support the board before inserting the card (see [Mounting](#mounting-it-in-a-case)).
 
 ## Firmware
-Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja). Pre-built images of build 11:
-[`fw/prebuilt/`](fw/prebuilt/) (`isa_lpc_flash_build11.elf`, `isa_lpc_ram_build11.elf`).
+Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja). Pre-built images of build 12:
+[`fw/prebuilt/`](fw/prebuilt/) (`isa_lpc_flash_build12.elf`, `isa_lpc_ram_build12.elf`).
 
 - **Architecture:** three PIO blocks implement the LPC target (front end, reply script player, LDRQ#/SERIRQ engines);
   core 1 claims LPC cycles within the 3-clock SYNC deadline; core 0 runs the ISA bus (address through the shift
@@ -201,6 +201,9 @@ Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja
   at `0x2007C000` and can be changed live with OpenOCD (`fw/tools/isa.tcl`).
 - **Config port:** the bridge answers on I/O ports **4E/4F** (like the Fintek chip); `ISALPC` uses it. Index 'I','S','A' unlocks
   it. It can be turned off with a flag.
+- **Saved config:** `ISALPC ... SAVE` keeps the bridge settings (port filter, IRQ list, timing) in the MCU flash, so the bridge
+  answers correctly right after power-up. `ISALPC FORGET` erases them. A save pauses the bridge for up to a second. Settings
+  that could lock the host out are never restored from flash.
 - **Tests without hardware:** `python3 fw/sim/test_lpc.py`, `python3 fw/sim/test_aux.py` (cycle simulator of the PIO programs),
   `cc -Ifw/src -o /tmp/t fw/test/io16_test.c && /tmp/t`, same for `cfgport_test.c`.
 - Not verified on silicon: PIO timing against the real LCLK, the 400 MHz clock and 1.30 V core, flash timing, SERIRQ quiet mode.
@@ -208,7 +211,7 @@ Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja
 ## Host setup: ISALPC
 The chipset forwards only the I/O ranges it was told to, and the bridge claims only the ports of the card you use.
 `ISALPC` (DOS, `host/ISALPC.EXE`) or `isalpc` (Linux, as root) does both. **Run it after every boot** (the chipset
-windows are reset by the BIOS, the bridge settings live in RAM): put it in `AUTOEXEC.BAT` before the sound drivers.
+windows are reset by the BIOS; the bridge settings live in RAM unless you `SAVE` them): put it in `AUTOEXEC.BAT` before the sound drivers.
 
 ```
 ISALPC                      show decode windows, SERIRQ, PCI IRQs and the bridge state (writes nothing)
@@ -219,7 +222,7 @@ ISALPC ORPHEUS2 FORCE       Orpheus II: replaces BIOS windows as needed
 ISALPC AWE32 FORCE NOPIRQ   AWE32, also turns PCI interrupt routing off for the IRQs the bridge serves
 ISALPC LIST                 all presets
 ```
-Options: `FORCE` replaces decode windows the BIOS set (as few as needed, highest window first, and it says which),
+Options: `SAVE` stores the bridge settings in its flash (`FORGET` erases them), `FORCE` replaces decode windows the BIOS set (as few as needed, highest window first, and it says which),
 `DRY` changes nothing, `DMA` resets the DMA controllers (default on DOS), `LDRQ1` switches the GPIO pad to LDRQ1#,
 `NOPIRQ` stops routing PCI interrupts to the IRQs the bridge serves, `KEEPSIRQ` leaves the Serial IRQ mode alone (the
 default is continuous mode), `IRQ=5,7` sets the served IRQs exactly, `GPIO=680` chooses where the chipset GPIO block moves
@@ -271,7 +274,7 @@ images/    renders
 ```
 
 ## Quirks and limits
-- Board settings in RAM: after a power cycle the bridge forgets the port filter. Run `ISALPC` again.
+- Run `ISALPC` at every boot: the BIOS resets the chipset's decode windows each time. The bridge's own settings can be kept in its flash with `ISALPC ... SAVE`, otherwise they are lost at power-off.
 - The ISA bus is driven by an MCU through shift registers: **it is slower than a real ISA slot** (not measured yet), and
   I/O writes are posted. 16-bit read pairing is on only for ports in `cfg.word_rd` (EMU8000, InterWave).
 - 5 V logic on the ISA side through buffers; the MCU side is 3.3 V. `IOCS16#` is sensed after each address change.
