@@ -119,3 +119,13 @@ deny 40) against `cfg.h`, the decode planner, the GPIO block move, the three rem
 and negative rail values on the board (EN2 divider 2.28 V, FB 1M/62k, 79M05 from -12.1 V).
 Still unverified: everything on hardware; `ISALPC.EXE` (DOS port access code never compiled); the patched BIOS (never booted).
 
+## Build 12: saved bridge config (2026-11-13)
+`ISALPC SAVE` writes dbg.cfg to flash (config port offset F000, command 'W'; 'X' forgets; status at F000, valid flag at F001).
+Loaded at boot after the defaults if magic, layout, size, sysclk and CRC match. Sanitised on load and on save: no `F_STOP_LPC`,
+`F_NO_CFGPORT`, `F_HOLD_RESET`, ports 4E/4F never denied. Erase and program run from RAM (copy_to_ram: all code is in RAM, checked
+with nm), interrupts off during each call, watchdog kicked between sectors, QMI timing restored afterwards (`flash_timing_restore`
+in main.c). The ROM resetting the XIP timing after a flash operation at 400 MHz is assumed from the SDK, not verified; if flash
+reads fail after a save the symptom would be a hang right after it.
+Tests: `fw/test/persist_test.c` (fake flash: CRC, layout, clock mismatch, lock-out flags, error status), `cfgport_test.c`
+(command and status routing), `host/test_isalpc.c` (SAVE, FORGET, dry run). Not run on hardware.
+

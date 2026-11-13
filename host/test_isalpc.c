@@ -4,6 +4,11 @@
 #define dbg test_dbg
 #include "../fw/src/cfg.h"
 static fw_dbg_t test_dbg;
+#include <stdbool.h>
+static char pcmd; static int pbusy;
+void persist_request(char c) { pcmd = c; pbusy = 2; }
+uint8_t persist_status(void) { return pbusy ? (pbusy--, 1) : 0; }
+bool persist_valid(void) { return pcmd == 'W'; }
 #include "../fw/src/cfgport.c"
 #define ISALPC_SIM
 #define main isalpc_main
@@ -32,7 +37,7 @@ static void bios(unsigned gpiobase_) {                       // state after POST
 static int run(const char *args) {
     static char buf[200]; char *argv[20]; int argc = 1;
     memset(allow, 0, sizeof allow); memset(need, 0, sizeof need); irq_add = irq_set = 0;
-    have_irq_set = have_ports = opt_dry = opt_force = opt_ldrq1 = 0; opt_dma = 0; opt_gpio = gpio_from = 0; fix_steal = opt_keepsirq = opt_nopirq = 0;
+    have_irq_set = have_ports = opt_dry = opt_force = opt_ldrq1 = 0; opt_dma = 0; opt_gpio = gpio_from = 0; fix_steal = opt_keepsirq = opt_nopirq = opt_save = opt_forget = 0; pcmd = 0; pbusy = 0;
     strcpy(buf, args); argv[0] = "isalpc";
     for (char *t = strtok(buf, " "); t; t = strtok(NULL, " ")) argv[argc++] = t;
     printf("--- isalpc %s\n", args);
@@ -82,6 +87,10 @@ int main(void) {
     assert(run("wss 680-683 gpio=A80") == 0 && pci_r16(0x48) == 0xA81 && fwd(0x680) && fwd(0x530));
     bios(0x500); put32(0x40, 0x401);
     assert(run("400-403") == 1 && pci_r16(0x48) == 0x501);                                  // PMBASE is not moved
+    bios(0x1C00);
+    assert(run("sb16 save") == 0 && pcmd == 'W' && !denied(0x220));                                    // saved after the settings were written
+    bios(0x1C00); assert(run("forget") == 0 && pcmd == 'X' && (pci_r16(0x82) & 0x2000));              // forget alone enables 4E/4F
+    bios(0x1C00); assert(run("sb16 save dry") == 0 && pcmd == 0);                                      // dry run saves nothing
     assert(run("nosuch") == 1 && run("irq=8") == 1 && run("80-8F") == 1);
 
     // the X99M Killer/3.1 after POST (BIOS P4.01): three GEN ranges taken, both COM decodes on, GPIO at 500, SERIRQ quiet

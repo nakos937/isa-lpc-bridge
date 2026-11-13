@@ -19,6 +19,8 @@ add_executable(isa_lpc
     src/mailbox.c
     src/io16.c
     src/cfgport.c
+    src/persist.c
+    src/persist_hw.c
 )
 
 pico_generate_pio_header(isa_lpc ${CMAKE_CURRENT_LIST_DIR}/pio/lpc_fe.pio)
@@ -26,7 +28,7 @@ pico_generate_pio_header(isa_lpc ${CMAKE_CURRENT_LIST_DIR}/pio/lpc_tx.pio)
 pico_generate_pio_header(isa_lpc ${CMAKE_CURRENT_LIST_DIR}/pio/lpc_aux.pio)
 
 target_link_libraries(isa_lpc
-    pico_stdlib pico_multicore hardware_pio hardware_spi hardware_gpio hardware_clocks hardware_vreg hardware_watchdog hardware_sync hardware_resets)
+    pico_stdlib pico_multicore hardware_pio hardware_spi hardware_gpio hardware_clocks hardware_vreg hardware_watchdog hardware_sync hardware_resets hardware_flash)
 
 target_compile_options(isa_lpc PRIVATE -O3 -Wall -Wextra -Wno-unused-parameter)
 target_compile_definitions(isa_lpc PRIVATE PICO_STACK_SIZE=0x800 PICO_USE_STACK_GUARDS=0)

@@ -4,6 +4,9 @@
 // reads or writes one byte of fw_dbg_t at the offset and steps it. cfg is writable (not magic/build), stats are read only.
 #include "cfgport.h"
 #include "cfg.h"
+#include "persist.h"
+
+#define CMD_OFF 0xF000u                // write: 'W' save the cfg to flash, 'X' forget it; read: status (0 ok, 1 busy, E0 error), +1: saved config valid
 
 static uint8_t st;                  // 0..2 key bytes seen, 3 offset low next, 4 offset high next, 5 open
 static uint16_t off;
@@ -18,13 +21,15 @@ void cfgport_write(uint16_t a, uint8_t d) {
     }
     if (st != 5) return;
     // shortcut: 32 bit fields change one byte at a time, a cycle between two bytes sees a mixed value; add a latch if that bites
-    if (off >= 8 && off < sizeof(fw_cfg_t)) ((uint8_t *)&dbg.cfg)[off] = d;
+    if (off == CMD_OFF) persist_request((char)d);
+    else if (off >= 8 && off < sizeof(fw_cfg_t)) ((uint8_t *)&dbg.cfg)[off] = d;
     off++;
 }
 
 uint8_t cfgport_read(uint16_t a) {
     if (!(a & 1) || st != 5) return 0xFF;
-    uint8_t v = off < sizeof(fw_cfg_t) + sizeof(fw_stats_t) ? ((const uint8_t *)&dbg)[off] : 0xFF;
+    uint8_t v = off == CMD_OFF ? persist_status() : off == CMD_OFF + 1 ? persist_valid()
+              : off < sizeof(fw_cfg_t) + sizeof(fw_stats_t) ? ((const uint8_t *)&dbg)[off] : 0xFF;
     off++;
     return v;
 }

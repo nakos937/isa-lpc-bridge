@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // cc -Isrc -o cfgport_test test/cfgport_test.c && ./cfgport_test
+#include <stdbool.h>
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
 #define dbg test_dbg
 #include "../src/cfg.h"
 static fw_dbg_t test_dbg;
+static char last_cmd; static uint8_t pst = 0x55, pval = 1;
+void persist_request(char c) { last_cmd = c; }
+uint8_t persist_status(void) { return pst; }
+bool persist_valid(void) { return pval; }
 #include "../src/cfgport.c"
 
 static void open_at(unsigned o) { cfgport_write(0x4E, 'I'); cfgport_write(0x4E, 'S'); cfgport_write(0x4E, 'A'); cfgport_write(0x4E, o & 0xFF); cfgport_write(0x4E, o >> 8); }
@@ -26,6 +31,9 @@ int main(void) {
     open_at(sizeof(fw_cfg_t)); cfgport_write(0x4F, 0); assert(dbg.st.ior == 0x11223344 && cfgport_read(0x4F) == 0x33);   // stats read only (offset stepped)
     open_at(sizeof(fw_cfg_t) + sizeof(fw_stats_t)); assert(cfgport_read(0x4F) == 0xFF);                                   // past the end
     cfgport_write(0x4E, 0x00); assert(cfgport_read(0x4F) == 0xFF);          // any index write locks again
+    open_at(0xF000); cfgport_write(0x4F, 'W'); assert(last_cmd == 'W');                                // save command
+    open_at(0xF000); assert(cfgport_read(0x4F) == 0x55 && cfgport_read(0x4F) == 1);                  // status, then "saved config valid"
+    open_at(0xF000); cfgport_write(0x4F, 'X'); assert(last_cmd == 'X' && dbg.cfg.magic == FW_MAGIC);
     puts("cfgport ok");
     return 0;
 }

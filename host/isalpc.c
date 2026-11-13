@@ -107,7 +107,7 @@ static u16 iod, en, pmbase, gpiobase;
 static u32 pciirq;
 static u32 gen[4], gen0[4];                     /* planned / as the BIOS left them */
 static u8 gen_kept[4];
-static int fix_steal, opt_keepsirq, opt_nopirq;
+static int fix_steal, opt_keepsirq, opt_nopirq, opt_save, opt_forget;
 static const u16 comr[8] = {0x3F8, 0x2F8, 0x220, 0x228, 0x238, 0x2E8, 0x338, 0x3E8};
 
 static int getbit(const u8 *m, u32 i) { return (m[i >> 3] >> (i & 7)) & 1; }
@@ -345,6 +345,15 @@ static int plan(int nsteal, int final) {
 static void br_seek(u16 off) { io_w8(0x4E, 'I'); io_w8(0x4E, 'S'); io_w8(0x4E, 'A'); io_w8(0x4E, (u8)off); io_w8(0x4E, (u8)(off >> 8)); }
 static u32 br_r32(u16 off) { u32 v; br_seek(off); v = io_r8(0x4F); v |= (u32)io_r8(0x4F) << 8; v |= (u32)io_r8(0x4F) << 16; return v | ((u32)io_r8(0x4F) << 24); }
 
+/* config port command at offset F000: 'W' save the bridge config to its flash, 'X' forget it. Status: 0 ok, 1 busy, E0 error. */
+static int br_cmd(u8 c) {
+    long n;
+    u8 st = 1;
+    br_seek(0xF000); io_w8(0x4F, c);
+    for (n = 0; n < 20000L && st == 1; n++) { br_seek(0xF000); st = io_r8(0x4F); }
+    return st;
+}
+
 static void bridge(void) {
     u32 i, frames, nf;
     if (br_r32(0) != 0x31415349UL) {
@@ -353,6 +362,9 @@ static void bridge(void) {
         return;
     }
     printf("Bridge: firmware build %lu, %lu MHz.", br_r32(4), br_r32(0x20) / 1000);
+    br_seek(0xF001);
+    i = io_r8(0x4F);
+    if (i != 0xFF) printf(" Saved config in flash: %s.", i ? "yes" : "no");   /* 0xFF: firmware without the save command */
     frames = br_r32(0x2C);
     if (have_ports && !opt_dry) {
         setbit(allow, 0x4E, 1); setbit(allow, 0x4F, 1);
@@ -375,6 +387,10 @@ static void bridge(void) {
                 printf("\nPIRQ%c routing to IRQ %u switched off.", (int)(i < 4 ? 'A' + i : 'E' + i - 4), n);
             }
         }
+    }
+    if ((opt_save || opt_forget) && !opt_dry) {
+        i = br_cmd((u8)(opt_forget ? 'X' : 'W'));
+        printf("\n%s: %s.", opt_forget ? "Saved config forgotten" : "Config saved to flash", i == 0 ? "done" : i == 1 ? "no answer, still busy" : "FAILED (flash error or firmware without the command)");
     }
     printf("\nBridge IRQs:");
     for (i = 3; i < 16; i++) if ((frames >> i) & 1) printf(" %lu%s", i, ((pciirq >> i) & 1) ? "(PCI too!)" : "");
@@ -429,7 +445,9 @@ static void usage(void) {
            "  no arguments: show the chipset and bridge state\n"
            "  force: replace decode ranges the BIOS set (as few as needed)    dry: change nothing\n"
            "  keepsirq: leave the Serial IRQ mode alone (default: continuous)\n"
-           "  nopirq: stop routing PCI interrupts (PIRQ A-H) to IRQs the bridge serves\n");
+           "  nopirq: stop routing PCI interrupts (PIRQ A-H) to IRQs the bridge serves\n"
+           "  save: keep the bridge settings in its flash, so it answers right after power-up (the PCH windows still need ISALPC at every boot)\n");
+    printf("  forget: erase the saved bridge settings\n");
     printf("  irq=:  IRQs the bridge serves (default: its list plus those of the presets)\n"
            "  dma:   reset the DMA controllers (DOS default)    ldrq1: switch the GPIO23 pin to LDRQ1#\n"
            "  gpio=: where the PCH GPIO registers go when a card needs their ports (default 680)\nPresets (hex ports):\n");
@@ -448,6 +466,8 @@ int main(int argc, char **argv) {
         else if (!strcmp(a, "ldrq1")) opt_ldrq1 = 1;
         else if (!strcmp(a, "keepsirq")) opt_keepsirq = 1;
         else if (!strcmp(a, "nopirq")) opt_nopirq = 1;
+        else if (!strcmp(a, "save")) opt_save = 1;
+        else if (!strcmp(a, "forget")) opt_forget = 1;
         else if (!strncmp(a, "gpio=", 5)) opt_gpio = (u16)(strtoul(a + 5, NULL, 16) & 0xFF80);
         else bad |= add_token(a, 0, 0);
     }
@@ -514,6 +534,8 @@ int main(int argc, char **argv) {
         printf(opt_dry ? "Dry run, nothing written. Planned:\n" : "Decode ranges written:\n");
     }
     status();
+    if (!have_ports && (opt_save || opt_forget) && !opt_dry && !(pci_r16(0x82) & 0x2000)) pci_w16(0x82, (u16)(pci_r16(0x82) | 0x2000));   /* 4E/4F to LPC */
+    if (!have_ports && (opt_save || opt_forget) && !opt_dry && !(pci_r16(0x82) & 0x2000)) pci_w16(0x82, (u16)(pci_r16(0x82) | 0x2000));   /* 4E/4F to LPC */
     if (pci_r16(0x82) & 0x2000) bridge(); else printf("Bridge: 4E/4F is not forwarded yet (run with a preset).\n");
     if (have_ports && opt_dma && !opt_dry) dma_reset();
     return 0;

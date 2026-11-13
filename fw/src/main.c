@@ -6,6 +6,7 @@
 #include "isa.h"
 #include "lpc.h"
 #include "cfgport.h"
+#include "persist.h"
 #include "pico/stdlib.h"
 #include "hardware/clocks.h"
 #include "hardware/vreg.h"
@@ -39,7 +40,7 @@
   #endif
 #endif
 #define FLASH_MAX_KHZ 66000          // in-package W25Q16JV, kept well below its 133 MHz limit
-#define BUILD 11
+#define BUILD 12
 
 // fixed RAM address, outside the linker's view (image is far below 0x2007C000, stacks sit at 0x20080000): survives a reload
 extern void mailbox_poll(void);
@@ -84,6 +85,13 @@ static void __unused __no_inline_not_in_flash_func(flash_div)(uint32_t div, uint
     (void)*(volatile uint32_t *)XIP_NOCACHE_NOALLOC_BASE;        // dummy access so the new divider is in use
 }
 
+static uint32_t __unused fl_div, fl_rx;                           // what flash_div set last: a flash erase or program makes the ROM reset it
+void __no_inline_not_in_flash_func(flash_timing_restore)(void) {
+#ifndef FW_RAM_BUILD
+    if (fl_div) flash_div(fl_div, fl_rx);
+#endif
+}
+
 int main(void) {
 #if SYSCLK_KHZ > 400000 || defined(FW_VREG_UNLIMITED)
     vreg_disable_voltage_limit();
@@ -99,12 +107,17 @@ int main(void) {
 #ifndef FW_RAM_BUILD
     // RXDELAY counts half sys clocks; boot2 uses 2 at 150 MHz (6.7 ns pad round trip): keep that time at the new clock
     uint32_t rx = (2u * SYSCLK_KHZ + 149999u) / 150000u;
-    flash_div(fdiv, rx > 7 ? 7 : rx);
+    fl_div = fdiv; fl_rx = rx > 7 ? 7 : rx;
+    flash_div(fl_div, fl_rx);
 #endif
 
     // a debugger may have written the config before the reset: keep it when the magic is intact
-    if (dbg.cfg.magic != FW_MAGIC || dbg.cfg.build != BUILD) defaults();
     dbg.cfg.sysclk_khz = clock_get_hz(clk_sys) / 1000u;
+    if (dbg.cfg.magic != FW_MAGIC || dbg.cfg.build != BUILD) {
+        defaults();
+        dbg.cfg.sysclk_khz = clock_get_hz(clk_sys) / 1000u;
+        persist_load();                                  // config saved with ISALPC SAVE, if any (same clock only)
+    }
 
     isa_init();
     lpc_init();
@@ -118,6 +131,7 @@ int main(void) {
     bool rst_prev = isa_pcirst_n();
     for (;;) {
         lpc_poll();                                 // LPC cycles first, always
+        persist_poll();                             // a save or forget request from the config port (blocks up to a second)
         lpc_service_drq();                          // DRQ -> LDRQ#: cheap (one register read), every iteration
         bool r = isa_pcirst_n();
         if (r != rst_prev) {                        // host reset edge: flush every engine, the cards see RESETDRV in hardware
