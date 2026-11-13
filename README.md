@@ -83,7 +83,7 @@ The `ISALPC` presets in parentheses set up the chipset and the bridge for the ca
 | Card | Status | Notes |
 |---|---|---|
 | Sound Blaster 1.x/2.0/Pro, **Sound Blaster 16** (`sb`, `sb16`) | **tested**, works (SB16) | byte I/O only. 8-bit DMA 1, 16-bit DMA 5. IRQ 5/7. MPU-401 at 330 |
-| AdLib, OPL2/OPL3 (`adlib`) | works | ports 388-38B, no IRQ or DMA |
+| AdLib, OPL2/OPL3 (`adlib`) | expected (the OPL3 on the tested cards works) | ports 388-38B, no IRQ or DMA |
 | **Gravis UltraSound** classic (`gus`, `gusmax`) | **tested**, works | base 240; word access on base+0x104 is handled |
 | **GUS PnP / AMD InterWave** (`guspnp`) | **tested**, works | needs the ISA PnP ports (279, A79, read port) forwarded: `@pnp` is included |
 | **Orpheus II** (`orpheus2`) | **tested**, works | CS4237B + InterWave + OPL3 + PCMIDI; needs all four LPC windows. WSS at 534 collides with the chipset GPIO block on some boards (the X99M): `ISALPC` moves that block, **DOS only** |
