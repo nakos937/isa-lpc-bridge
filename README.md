@@ -256,6 +256,7 @@ Linux: `cc -O2 -o isalpc host/isalpc.c`, run as root. DOS: `make -C host ISALPC.
 | Netlist | `python3 sch/build.py` (SKiDL, KiCad 10 libraries), `python3 tools/netcheck.py` |
 | Board | open `pcb/PASS_HG25.kicad_pcb` in **KiCad 10**; custom footprints in `lib/isa_bridge.pretty` (add to your footprint table) |
 | Fab files | `fab/PASS_HG25_gerbers.zip`, `fab/bom.csv`, `fab/cpl.csv` (JLCPCB format, LCSC numbers in the BOM) |
+| Datasheets | `docs/datasheets/` (index in its README) |
 | Independent clearance audit | `tools/review/via_copper_audit.py` (KiCad Python) |
 
 ## Repository layout

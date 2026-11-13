@@ -259,6 +259,7 @@ Linux: `cc -O2 -o isalpc host/isalpc.c`, rootként futtasd. DOS: `make -C host I
 | Hálólista | `python3 sch/build.py` (SKiDL, KiCad 10 könyvtárak), `python3 tools/netcheck.py` |
 | Panel | nyisd meg a `pcb/PASS_HG25.kicad_pcb`-t **KiCad 10**-zel; egyedi lábnyomok: `lib/isa_bridge.pretty` (add hozzá a lábnyomtáradhoz) |
 | Gyártási fájlok | `fab/PASS_HG25_gerbers.zip`, `fab/bom.csv`, `fab/cpl.csv` (JLCPCB formátum, LCSC számok a BOM-ban) |
+| Adatlapok | `docs/datasheets/` (tartalomjegyzék a README-jében) |
 | Független távolság-ellenőrzés | `tools/review/via_copper_audit.py` (KiCad Python) |
 
 ## Tároló felépítése
