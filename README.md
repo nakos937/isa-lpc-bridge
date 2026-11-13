@@ -4,7 +4,7 @@ A riser board with one **16-bit ISA slot** that connects to a modern PC through 
 It is meant for **legacy ISA cards under DOS and DOS-based systems**: sound cards (Sound Blaster, Gravis UltraSound, Orpheus II, ...), I/O and
 serial cards, and other I/O-mapped cards with IRQ and DMA.
 Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a microcontroller (RP2354B, firmware in C) in
-place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable.
+place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable, and does not rely on a custom, hard to get ASIC.
 
 > **Status.** Revision `PASS_HG25` works. Tested by the author with a **Sound Blaster 16, Gravis UltraSound, GUS PnP,
 > Orpheus II and a generic OPL3-SAx card** (all working without problems, **including DMA** through the LDRQ# wire) and an ISA **floppy/COM port card**. Cards in the table below that are not marked
