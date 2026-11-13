@@ -286,7 +286,8 @@ images/    renders
 - Idea and the DOS tool's concept: **rasteri's [dISAppointment](https://github.com/rasteri/dISAppointment)** (CC BY-SA 4.0): ISA socket
   footprint, pull-up network, `sapphisa`; **[lpcexp](https://github.com/lss4/lpcexp)** (CC BY-SA 4.0): chipset
   register programming; both share the DMA reset register list with `ISALPC`. The MCU power circuit follows Raspberry Pi's RP2350 minimal design (MIT).
-- **Hardware, libraries, netlist script: CC BY-SA 4.0.** **Firmware, host tool, BIOS analysis scripts, audit scripts: GPL-2.0-or-later.**
+- **Everything we wrote (board, firmware, host tool, scripts, docs): GPL-2.0-or-later.** The ISA socket footprint and the pull-up
+  values come from dISAppointment and stay CC BY-SA 4.0.
   See [LICENSE.md](LICENSE.md) and [LICENSES/](LICENSES/).
 - No warranty. Plugging a PSU into a board you assembled yourself, and wiring to a motherboard with a soldering iron,
   can destroy both. You do it at your own risk.
