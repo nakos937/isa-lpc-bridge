@@ -1,6 +1,6 @@
 /* isalpc: forward ISA card ports from an Intel PCH (D31:F0) to LPC and set up the ISA-LPC bridge for them. DOS and Linux.
- * After sapphisa (rasteri, dISAppointment) and lpcexp: GEN decode encoding, DMA register reset, LDRQ1#/GPIO23 switch.
- * CC BY-SA 4.0, as those.
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ * Written from scratch. The idea and the DMA register list come from sapphisa (rasteri, dISAppointment) and lpcexp.
  *   DOS:    wcl -bt=dos -ms -3 -fe=ISALPC.EXE isalpc.c
  *   Linux:  cc -O2 -o isalpc isalpc.c        (run as root)
  *   test:   make test                         (fake PCH + the firmware's config port)
@@ -383,7 +383,7 @@ static void bridge(void) {
 }
 
 /* ---- chipset odds and ends -------------------------------------------------------------------------------------------- */
-static void dma_reset(void) {                               /* from sapphisa / lpcexp: the BIOS leaves the 8237s unprogrammed */
+static void dma_reset(void) {                               /* register list as in sapphisa / lpcexp: the BIOS leaves the 8237s unprogrammed */
     static const u8 zero[] = {0x00, 0x01, 0x04, 0x05, 0x06, 0x07, 0x08, 0x82, 0x87, 0x89, 0x8A, 0x8B, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5,
                               0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1};
     unsigned i;

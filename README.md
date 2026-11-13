@@ -227,7 +227,7 @@ when a card needs ports inside it (**DOS only**: ACPI operating systems expect t
 
 Limits you will hit: four decode windows of up to 256 ports each, one 256-port block per window; port 279 (ISA PnP address)
 is read-only through the LPT decode, so PnP cards need a window. The tool refuses ports inside the chipset's own register
-blocks. `isalpc.c` is derived from sapphisa and lpcexp (CC BY-SA 4.0); the DOS part needs Open Watcom to build.
+blocks. The DOS part needs Open Watcom to build.
 
 Linux: `cc -O2 -o isalpc host/isalpc.c`, run as root. DOS: `make -C host ISALPC.EXE` with Open Watcom, or use the prebuilt EXE.
 
@@ -283,10 +283,10 @@ images/    renders
   (AWE32 + PnP does not).
 
 ## Credits and licenses
-- Idea and the DOS tool's base: **rasteri's [dISAppointment](https://github.com/rasteri/dISAppointment)** (CC BY-SA 4.0): ISA socket
+- Idea and the DOS tool's concept: **rasteri's [dISAppointment](https://github.com/rasteri/dISAppointment)** (CC BY-SA 4.0): ISA socket
   footprint, pull-up network, `sapphisa`; **[lpcexp](https://github.com/lss4/lpcexp)** (CC BY-SA 4.0): chipset
-  register programming, DMA reset. The MCU power circuit follows Raspberry Pi's RP2350 minimal design (MIT).
-- **Hardware, host tool, libraries, netlist script: CC BY-SA 4.0.** **Firmware, BIOS analysis scripts, audit scripts: GPL-2.0-or-later.**
+  register programming; both share the DMA reset register list with `ISALPC`. The MCU power circuit follows Raspberry Pi's RP2350 minimal design (MIT).
+- **Hardware, libraries, netlist script: CC BY-SA 4.0.** **Firmware, host tool, BIOS analysis scripts, audit scripts: GPL-2.0-or-later.**
   See [LICENSE.md](LICENSE.md) and [LICENSES/](LICENSES/).
 - No warranty. Plugging a PSU into a board you assembled yourself, and wiring to a motherboard with a soldering iron,
   can destroy both. You do it at your own risk.

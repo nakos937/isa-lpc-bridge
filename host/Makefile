@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # isalpc: Linux binary, DOS EXE (Open Watcom 2: WATCOM=<dir>), self-test
 WATCOM ?= $(HOME)/work/toolchain/openwatcom
 WBIN   ?= $(firstword $(wildcard $(WATCOM)/armo64 $(WATCOM)/bino64 $(WATCOM)/binl64 $(WATCOM)/binl))

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 // make test: isalpc against a fake PCH (BIOS-like state) and the firmware's config port
 #include <assert.h>
 #define dbg test_dbg
