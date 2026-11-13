@@ -6,7 +6,7 @@ Like [dISAppointment](https://github.com/rasteri/dISAppointment), but with a mic
 place of the Fintek F85226 bridge chip, so the whole thing is open and tweakable.
 
 > **Status.** Revision `PASS_HG25` works. Tested by the author with a **Sound Blaster 16, Gravis UltraSound, GUS PnP,
-> Orpheus II and a generic OPL3-SAx card** (all working without problems) and an ISA **floppy/COM port card**. Cards in the table below that are not marked
+> Orpheus II and a generic OPL3-SAx card** (all working without problems, **including DMA** through the LDRQ# wire) and an ISA **floppy/COM port card**. Cards in the table below that are not marked
 > *tested* are expected to work from datasheets and Linux driver sources. Reports and fixes are welcome.
 
 ![top view](images/top.png)
@@ -69,7 +69,7 @@ flowchart LR
 ### Motherboards / chipsets
 | Host | I/O + IRQ | DMA | Notes |
 |---|---|---|---|
-| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | works | design target | BIOS analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17-pin TPMS1 header |
+| **ASRock Fatal1ty X99M Killer** (Intel X99 / C610) | works | **works** (with the LDRQ# wire) | BIOS analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md); 17-pin TPMS1 header |
 | Other Intel chipsets **before the 100 series** (6/7/8/9 series, X79/X99/C600) | expected | expected, needs LDRQ# wire | LPC DMA exists on these. Header pinouts differ per board: check with a meter |
 | Intel **100 series and newer** (Skylake and later) | expected (GEN decode ranges exist) | **no**: Intel removed LDRQ# from the 100 series on | FM synthesis, MIDI and PIO sound work; digitised audio in DOS games needs DMA and will not. See the [lpcexp readme](https://github.com/lss4/lpcexp) |
 | AMD (AM4 and similar) | use lpcexp (AMD code), not `isalpc` | AM4: unknown to us; **AM5/SP5: no LDRQ#** | not covered |
@@ -159,7 +159,7 @@ DMA on the LPC bus is requested by a separate signal, **LDRQ#**. The TPM header 
 from the motherboard yourself. Without it everything else works (I/O cycles, IRQs, FM/OPL music), but anything that needs
 DMA (digitised sound in DOS games, SB/GUS sample playback) will not.
 
-1. **Find the signal.** The chipset has an LDRQ0# pin (and some also LDRQ1#). On most boards it runs to the Super I/O chip
+1. **Find the signal.** Use the board's boardview. The chipset has an LDRQ0# pin (and some also LDRQ1#). On most boards it runs to the Super I/O chip
    (the one that does COM/LPT/PS-2) and often to a test pad, a series resistor, a 0 ohm link or a via on the way. Look at
    the board's schematic or boardview if you have one, or probe the Super I/O's LDRQ# pin. The signal idles **high at
    3.3 V** and pulses low during a DMA request. It must never be tied to 5 V.
@@ -175,9 +175,9 @@ DMA (digitised sound in DOS games, SB/GUS sample playback) will not.
 6. Some chipsets multiplex LDRQ1# with a GPIO. If you picked that pin, `ISALPC ldrq1` switches the pad to LDRQ1#. On the
    author's ASRock X99M Killer (BIOS P4.01) the LDRQ1# pad is already set to its LDRQ function (found by static analysis of the BIOS image).
 
-> **The exact test point on the author's X99M Killer is not documented yet.** The wire was not soldered at the time of
-> writing. Once it is, the point, a photo and the DMA test result will be added here. Until then, treat steps 1-6 as a
-> procedure to follow with a meter, not as a known-good recipe.
+> **The test point is board specific.** Open your board's **boardview** (or schematic) and look up the LDRQ# / LDRQ0# net
+> between the chipset and the Super I/O or the LPC pads. The author's X99M Killer works this way: with the wire in place,
+> DMA (digitised audio on the SB16, GUS and Orpheus II) works.
 
 ## First power-up checklist
 1. Before inserting anything, check **J1 polarity** with a meter: red wire to TP1 (+5 V), yellow to TP2 (+12 V).
