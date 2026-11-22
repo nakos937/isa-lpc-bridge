@@ -129,3 +129,24 @@ reads fail after a save the symptom would be a hang right after it.
 Tests: `fw/test/persist_test.c` (fake flash: CRC, layout, clock mismatch, lock-out flags, error status), `cfgport_test.c`
 (command and status routing), `host/test_isalpc.c` (SAVE, FORGET, dry run). Not run on hardware.
 
+
+## Review 2026-11-22 (build 13)
+Adversarial pass after the HG25 hardware test. DRC 0/0, netlist-to-board parity 189/189 nets, BOM = CPL = board (153), all tests pass.
+1. Fixed. `isalpc` compared arguments case sensitive: `ISALPC SB16 SAVE` (README, DOS habit) failed with "unknown preset".
+   Arguments are lowered now; test added.
+2. Fixed. Strobe timing below the Ampro tables (Ampro "ISA Bus Timing Diagrams", receiver minimums): 8 bit I/O
+   command 400 ns vs 530 (table 1, 8d); DMA command 400 vs 489/786 (table 2, 12/11a), DACK setup 120 vs 310 (1b), DACK hold 60 vs
+   162 (13b). New fields after deny[]: `t_cmd8_ns` 540 (cycles without IOCS16#), `t_dma_cmd_ns` 800, `t_dack_setup_ns` 320,
+   `t_dack_hold_ns` 170. `t_cmd_ns` (400) now applies to IOCS16# cycles only. Saved-config layout 2 (old saves are ignored).
+   Cost: a DMA cycle takes about 1.3 us instead of 0.6 us.
+3. Fixed. The SERIRQ start-pulse kick also fired in continuous mode: the host ignores it, but our engine took it as a start and
+   counted frames from it (wrong frames driven until it fell back in step). The engine raises PIO2 IRQ 0 after every stop frame;
+   the CPU kicks only after 50 us without one. Simulator checks the flag.
+4. Fixed. `isalpc` warns when a requested port is also forwarded by a BIOS COM/LPT/floppy decode (both would answer).
+5. Fixed. `drq_claim` stayed set after a transfer ended, so onboard Super I/O DMA on that channel was also claimed. Cleared when
+   the transfer ends by SYNC; kept after an LDRQ# withdraw (a granted cycle may still come, LPC 6.3).
+6. Fixed. `sysclk_khz` was writable through the config port; duplicate line in `isalpc` main.
+Not changed (author): -12 V is the ADP5071 output without post-filter; README LDRQ# advice (shared Super I/O line) stays.
+Checked from the SDK 2.3.1 source: flash erase/program re-enters XIP through the bootrom's saved setup function, then
+`flash_timing_restore` reapplies the overclock divider; all code runs from RAM, so the build 12 assumption holds on paper.
+Not run on hardware: build 13.

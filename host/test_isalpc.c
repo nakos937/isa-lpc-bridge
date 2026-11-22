@@ -92,6 +92,7 @@ int main(void) {
     bios(0x1C00); assert(run("forget") == 0 && pcmd == 'X' && (pci_r16(0x82) & 0x2000));              // forget alone enables 4E/4F
     bios(0x1C00); assert(run("sb16 save dry") == 0 && pcmd == 0);                                      // dry run saves nothing
     assert(run("nosuch") == 1 && run("irq=8") == 1 && run("80-8F") == 1);
+    bios(0x1C00); assert(run("SB16 SAVE") == 0 && pcmd == 'W' && !denied(0x220));                     // DOS style upper case
 
     // the X99M Killer/3.1 after POST (BIOS P4.01): three GEN ranges taken, both COM decodes on, GPIO at 500, SERIRQ quiet
 #define X99() do { bios(0x500); put16(0x82, 0x3C03); put32(0x40, 0x401); put32(0x84, 0x003C0281); put32(0x8C, 0x000C0CA3); put32(0x90, 0x001C0601); sim_pci[0x64] = 0x90; sim_io[0x502] = sim_io[0x682] = 0; } while (0)   /* LDRQ1# native */

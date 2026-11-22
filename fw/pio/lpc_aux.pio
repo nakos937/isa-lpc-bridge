@@ -54,4 +54,5 @@ stop:
     wait 0 pin 5        ; middle of the next clock
     jmp pin stop        ; high again: a frame, not the stop pulse
     wait 1 pin 6
+    irq set 0           ; cycle seen: the CPU sends no start pulse while the host keeps polling
 .wrap

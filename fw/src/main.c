@@ -40,7 +40,7 @@
   #endif
 #endif
 #define FLASH_MAX_KHZ 66000          // in-package W25Q16JV, kept well below its 133 MHz limit
-#define BUILD 12
+#define BUILD 13
 
 // fixed RAM address, outside the linker's view (image is far below 0x2007C000, stacks sit at 0x20080000): survives a reload
 extern void mailbox_poll(void);
@@ -59,6 +59,10 @@ static void defaults(void) {
     dbg.cfg.flags = F_DMA;
     dbg.cfg.irq_hold_us = 30;
     dbg.cfg.t_drq_ns = 300;
+    dbg.cfg.t_cmd8_ns = 540;
+    dbg.cfg.t_dma_cmd_ns = 800;
+    dbg.cfg.t_dack_setup_ns = 320;
+    dbg.cfg.t_dack_hold_ns = 170;
     dbg.cfg.t_cs16_ns = 200;                // 595 RCLK to Q 11.5 + IOCS16# from SA 122 + rise through 1k + 165 H to QH 17.8
     // never claimed: 0x00-0xFF (Super I/O config 2E/4E, KBC 60/64, POST 0x80) and the ranges below. Other Super I/O ranges the
     // BIOS forwards must be denied too: host/isalpc rewrites deny[] to "all but the selected cards" through the config port.

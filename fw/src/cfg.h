@@ -26,7 +26,7 @@ enum {
 typedef struct {
     uint32_t magic;                     // +0x00
     uint32_t build;                     // +0x04 firmware build counter
-    uint32_t t_cmd_ns;                  // +0x08 minimum IOR#/IOW# low time
+    uint32_t t_cmd_ns;                  // +0x08 IOR#/IOW# low time of a 16 bit I/O cycle (IOCS16# answered)
     uint32_t t_addr_setup_ns;           // +0x0C SA valid before the strobe
     uint32_t t_hold_ns;                 // +0x10 data / address hold after the strobe
     uint32_t t_rdy_timeout_ns;          // +0x14 IOCHRDY wait limit
@@ -41,6 +41,10 @@ typedef struct {
                                         //       word cycle and keeps the high byte for the IN to port + 1; elsewhere a byte cycle, as on an AT
 
     uint8_t  deny[8192];                // +0x40 port filter: bit set = cycle not claimed (left to the Super I/O or to the host abort)
+    uint32_t t_cmd8_ns;                 // +0x2040 IOR#/IOW# low time of an 8 bit I/O cycle (Ampro table 1, 8d: 530)
+    uint32_t t_dma_cmd_ns;              // +0x2044 IOR#/IOW# low time of a DMA cycle (table 2, 11a/12: 786/489)
+    uint32_t t_dack_setup_ns;           // +0x2048 DACK#/AEN valid before the DMA strobe (1b: 310)
+    uint32_t t_dack_hold_ns;            // +0x204C DACK#/AEN/TC held after the DMA strobe (13b: 162)
 } fw_cfg_t;
 
 typedef struct {

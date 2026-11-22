@@ -32,11 +32,12 @@
 
 static uint32_t last_mask = 0xFFFFFFFFu;
 static volatile uint32_t drq_pending;           // channels with an LDRQ# request sent (bit n = channel n)
-static volatile uint32_t drq_claim;             // channels requested since reset: core 1 claims their DMA cycles (also one already started after a withdraw)
+static volatile uint32_t drq_claim;             // channels requested and not finished: core 1 claims their DMA cycles
 static uint32_t drq_quiet_from[8];              // DWT cycle count: LPC 1.1 needs 8 LCLK after the last DMA SYNC before a new LDRQ#
 static uint32_t drq_quiet_cyc;
 static inline uint32_t cyc(void) { return m33_hw->dwt_cyccnt; }
 static inline void drq_done(unsigned ch) { drq_pending &= ~(1u << ch); drq_quiet_from[ch] = cyc(); }
+static inline void drq_end(unsigned ch) { drq_done(ch); drq_claim &= ~(1u << ch); }   // after a withdraw the claim stays: a granted cycle may still come
 static volatile uint32_t wait_nib = 6;                   // wait-state SYNC; also the SAMPLE2 flag value in scripts
 static uint sirq_start_pc;
 static uint off_fe_idle, off_tx0, off_ldrq0, off_sirq0;
@@ -96,8 +97,8 @@ static bool RAM_FUNC(rx_byte)(uint8_t *b) {                  // byte sampled by 
     return false;
 }
 
-static inline bool more(unsigned ch) {          // t_drq_ns counts from the strobe release; t_hold_ns of it has passed
-    uint32_t t = dbg.cfg.t_drq_ns, h = dbg.cfg.t_hold_ns;
+static inline bool more(unsigned ch) {          // t_drq_ns counts from the strobe release; t_dack_hold_ns of it has passed
+    uint32_t t = dbg.cfg.t_drq_ns, h = dbg.cfg.t_dack_hold_ns;
     if (t > h) isa_ndelay(t - h);
     return (isa_drq() >> ch) & 1u;
 }
@@ -134,7 +135,7 @@ static void RAM_FUNC(serve)(uint32_t w) {
         if (!(dbg.cfg.flags & F_DMA) || ch == 4) { s_ack(SYNC_ERROR); return; }
         if (size == 0 && ch <= 3) {
             isa_dma_write(ch, tc, b0);
-            bool m = more(ch); if (!m) drq_done(ch);
+            bool m = more(ch); if (!m) drq_end(ch);
             s_ack(m ? SYNC_MORE : SYNC_READY);
             dbg.st.dma_r++; dbg.st.last_addr = ch; dbg.st.last_data = b0; dbg.st.last_type = 8;
             trace(8, ch, b0);
@@ -143,7 +144,7 @@ static void RAM_FUNC(serve)(uint32_t w) {
             uint8_t b1;
             if (!rx_byte(&b1)) { dbg.st.rdy_timeouts++; s_ack(SYNC_ERROR); return; }
             isa_dma16_write(ch, tc, (uint16_t)(b0 | ((uint16_t)b1 << 8)));
-            bool m = more(ch); if (!m) drq_done(ch);
+            bool m = more(ch); if (!m) drq_end(ch);
             s_ack(m ? SYNC_MORE : SYNC_READY);
             dbg.st.dma_r++; dbg.st.last_addr = ch; dbg.st.last_data = b0 | (b1 << 8); dbg.st.last_type = 8;
             trace(8, ch, b0);
@@ -156,13 +157,13 @@ static void RAM_FUNC(serve)(uint32_t w) {
         if (!(dbg.cfg.flags & F_DMA) || ch == 4) { s_data8(SYNC_ERROR, 0xFF); return; }
         if (size == 0 && ch <= 3) {
             uint8_t d = isa_dma_read(ch, tc);
-            bool m = more(ch); if (!m) drq_done(ch);
+            bool m = more(ch); if (!m) drq_end(ch);
             s_data8(m ? SYNC_MORE : SYNC_READY, d);
             dbg.st.dma_w++; dbg.st.last_addr = ch; dbg.st.last_data = d; dbg.st.last_type = 10;
             trace(10, ch, d);
         } else if (size == 1 && ch >= 5) {
             uint16_t d = isa_dma16_read(ch, tc);
-            bool m = more(ch); if (!m) drq_done(ch);
+            bool m = more(ch); if (!m) drq_end(ch);
             s_dmaw16(m ? SYNC_MORE : SYNC_READY, d);
             dbg.st.dma_w++; dbg.st.last_addr = ch; dbg.st.last_data = d; dbg.st.last_type = 10;
             trace(10, ch, d & 0xFF);
@@ -233,7 +234,9 @@ static void RAM_FUNC(send_ldrq)(unsigned ch, unsigned act) {
 
 // Quiet mode: the host only polls after a start pulse from a device. The SERIRQ engine waits for a low level; the CPU injects
 // a short low pulse through exec (about 4 LCLK, the host takes over and extends it) when the engine is idle and the bus is high.
-// In continuous mode a stray pulse in the idle gap is harmless: the next regular cycle carries the new mask.
+// Only when no cycle ended for SIRQ_QUIET_US: in continuous mode the host ignores the pulse but the engine would count frames from it.
+#define SIRQ_QUIET_US 50u
+static uint32_t sirq_seen_us;                   // last cycle end (engine raises PIO2 IRQ 0 after each stop pulse)
 static void RAM_FUNC(serirq_kick)(void) {
     if (pio_sm_get_pc(PIO_AUX, SM_SIRQ) != sirq_start_pc) return;       // frames in progress
     if (!gpio_get(PIN_SERIRQ)) return;                                   // somebody drives it low
@@ -248,6 +251,7 @@ void RAM_FUNC(lpc_service_irq)(void) {
     if (dbg.cfg.flags & F_NO_SERIRQ) return;
     uint32_t raw = isa_serirq_mask(isa_irq_stream());
     uint32_t now = time_us_32();
+    if (pio_interrupt_get(PIO_AUX, 0)) { pio_interrupt_clear(PIO_AUX, 0); sirq_seen_us = now; }
     uint32_t asserted = 0;
     for (unsigned f = 0; f < 17; f++) {
         if ((raw >> f) & 1u) { irq_hold_until[f] = now + dbg.cfg.irq_hold_us; irq_held |= 1u << f; }   // stretch short pulses so a SERIRQ cycle sees them
@@ -263,7 +267,7 @@ void RAM_FUNC(lpc_service_irq)(void) {
         pio_sm_put(PIO_AUX, SM_SIRQ, m);
         dbg.st.irq_changes++;
     }
-    if (!pio_sm_is_tx_fifo_empty(PIO_AUX, SM_SIRQ)) serirq_kick();     // not taken yet: quiet mode needs a start pulse
+    if (!pio_sm_is_tx_fifo_empty(PIO_AUX, SM_SIRQ) && now - sirq_seen_us >= SIRQ_QUIET_US) serirq_kick();   // not taken, host quiet: send a start pulse
 }
 
 void RAM_FUNC(lpc_service_drq)(void) {
@@ -411,6 +415,7 @@ void lpc_reset(void) {
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_jmp(off_sirq0));
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_pins, 0));
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_x, 0));
+    pio_interrupt_clear(PIO_AUX, 0);
 
     drq_pending = 0;
     drq_claim = 0;

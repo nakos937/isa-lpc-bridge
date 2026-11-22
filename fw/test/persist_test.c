@@ -32,7 +32,7 @@ int main(void) {
     assert(test_dbg.cfg.magic == FW_MAGIC && test_dbg.cfg.build == 12);
     test_dbg.cfg.sysclk_khz = 300000; assert(!persist_valid() && !persist_load()); test_dbg.cfg.sysclk_khz = 400000;   // other clock
     flash[100] ^= 1; assert(!persist_valid()); flash[100] ^= 1; assert(persist_valid());          // bit flip caught by the CRC
-    ((block_t *)flash)->layout = 2; assert(!persist_valid()); ((block_t *)flash)->layout = PERSIST_LAYOUT;
+    ((block_t *)flash)->layout = PERSIST_LAYOUT + 1; assert(!persist_valid()); ((block_t *)flash)->layout = PERSIST_LAYOUT;
     persist_request('X'); persist_poll(); assert(persist_status() == PERSIST_STATUS_OK && erases >= 1 && !persist_valid());
     fail = 1; persist_request('W'); persist_poll(); assert(persist_status() == PERSIST_STATUS_ERROR);   // flash error is reported
     puts("persist ok");

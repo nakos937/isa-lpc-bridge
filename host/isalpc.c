@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -457,7 +458,8 @@ static void usage(void) {
 int main(int argc, char **argv) {
     int i, bad = 0;
     for (i = 1; i < argc; i++) {
-        const char *a = argv[i];
+        char *a = argv[i], *c;
+        for (c = a; *c; c++) *c = (char)tolower((unsigned char)*c);   /* DOS users type ISALPC SB16 */
         if (!strcmp(a, "list") || !strcmp(a, "-h") || !strcmp(a, "/?")) { usage(); return 0; }
         else if (!strcmp(a, "force")) opt_force = 1;
         else if (!strcmp(a, "dry")) opt_dry = 1;
@@ -500,6 +502,11 @@ int main(int argc, char **argv) {
         for (p = 0x100; p <= 0xFFFF; p++)
             if (getbit(allow, p) && (forbidden((u16)p))) { printf("Port %lX is used by the chipset or VGA: a card there cannot work.\n", p); bad = 1; p |= 0x7F; }
         if (bad) return 1;
+        for (p = 0x100; p <= 0xFFFF; p++)                   /* the Super I/O behind a BIOS decode answers the same cycle */
+            if (getbit(allow, p) && fixed_covers(iod0, en0, (u16)p)) {
+                printf("Warning: %lX-%lX is forwarded by the BIOS to the onboard COM/LPT/floppy port: disable that port in the BIOS setup, or both answer.\n", p & ~7UL, p | 7);
+                p |= 7;
+            }
         memcpy(need0, need, sizeof need);
         {   /* BIOS ranges are replaced only with 'force', as few as needed, GEN4 first; its COM/LPT/FDD decodes last */
             int nb = 0, n, r;
@@ -534,7 +541,6 @@ int main(int argc, char **argv) {
         printf(opt_dry ? "Dry run, nothing written. Planned:\n" : "Decode ranges written:\n");
     }
     status();
-    if (!have_ports && (opt_save || opt_forget) && !opt_dry && !(pci_r16(0x82) & 0x2000)) pci_w16(0x82, (u16)(pci_r16(0x82) | 0x2000));   /* 4E/4F to LPC */
     if (!have_ports && (opt_save || opt_forget) && !opt_dry && !(pci_r16(0x82) & 0x2000)) pci_w16(0x82, (u16)(pci_r16(0x82) | 0x2000));   /* 4E/4F to LPC */
     if (pci_r16(0x82) & 0x2000) bridge(); else printf("Bridge: 4E/4F is not forwarded yet (run with a preset).\n");
     if (have_ports && opt_dma && !opt_dry) dma_reset();

@@ -25,6 +25,7 @@ int main(void) {
     assert(cfgport_read(0x4F) == 'I' && cfgport_read(0x4F) == 'S' && cfgport_read(0x4F) == 'A' && cfgport_read(0x4F) == '1');
     assert(cfgport_read(0x4F) == 11);
     open_at(0); cfgport_write(0x4F, 0); assert(dbg.cfg.magic == FW_MAGIC);  // magic and build are read only
+    dbg.cfg.sysclk_khz = 400000; open_at(offsetof(fw_cfg_t, sysclk_khz)); cfgport_write(0x4F, 0); assert(dbg.cfg.sysclk_khz == 400000);
     open_at(offsetof(fw_cfg_t, irq_frames)); cfgport_write(0x4F, 0xF8); cfgport_write(0x4F, 0xDE); cfgport_write(0x4F, 0x01);
     assert(dbg.cfg.irq_frames == 0x1DEF8);
     open_at(offsetof(fw_cfg_t, deny) + (0x3F8 >> 3)); cfgport_write(0x4F, 0xA5); assert(dbg.cfg.deny[0x3F8 >> 3] == 0xA5);

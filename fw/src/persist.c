@@ -7,7 +7,7 @@
 #include "cfg.h"
 
 #define PERSIST_MAGIC  0x53504C49u                // "ILPS"
-#define PERSIST_LAYOUT 1u                         // bump when fw_cfg_t changes shape
+#define PERSIST_LAYOUT 2u                         // bump when fw_cfg_t changes shape
 
 typedef struct { uint32_t magic, layout, size, crc, sysclk_khz; fw_cfg_t cfg; } block_t;
 _Static_assert(sizeof(block_t) <= PERSIST_BYTES, "saved block does not fit its flash area");
