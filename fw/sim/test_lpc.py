@@ -102,9 +102,9 @@ class Host:
 def nib(v, n): return [(v >> (4 * (n - 1 - i))) & 15 for i in range(n)]
 
 
-def build(kind, addr, data, ch):
-    """returns host op list"""
-    S = [("start",)]
+def build(kind, addr, data, ch, pre=0):
+    """returns host op list; pre: extra LFRAME# clocks before the START that counts (LPC 1.1 4.2.1.1: last clock is valid)"""
+    S = [("start", (0xF, 0x3)[i % 2]) for i in range(pre)] + [("start",)]
     if kind == "ior":
         S += [("d", 0)] + [("d", n) for n in nib(addr, 4)] + [("d", 0xF), ("z",)]
         S += [("wait", (0,))]
@@ -137,7 +137,7 @@ def run_cycle(kind, addr, data, ch, rnd, cpu_lat, claim_lat=None):
     fe_ops, fl = load("lpc_fe.pio")
     tx_ops, tl = load("lpc_tx.pio")
     sysm = System(3)
-    fe = SM("fe", fe_ops, sysm.pios[0], sysm.bus, dict(in_base=24, isr_left=True, osr_right=True, rx_depth=8, start=fl["idle"],
+    fe = SM("fe", fe_ops, sysm.pios[0], sysm.bus, dict(in_base=24, jmp_pin=LFRAME, isr_left=True, osr_right=True, rx_depth=8, start=fl["idle"],
                                                       wrap_target=fl["__wt"], wrap_top=fl["__wp"]))
     tx = SM("tx", tx_ops, sysm.pios[1], sysm.bus,
             dict(in_base=24, out_base=24, out_count=4, set_base=24, set_count=4, jmp_pin=LFRAME, tx_depth=4, rx_depth=4,
@@ -149,7 +149,7 @@ def run_cycle(kind, addr, data, ch, rnd, cpu_lat, claim_lat=None):
     if unclaimed:   # another device's I/O read: the target must leave LAD alone, then return to idle on the next START
         ops = [("start", 5 if kind == "tpm" else 0), ("d", 0)] + [("d", n) for n in nib(addr, 4)] + [("d", 0xF), ("z",)] + [("exp", 0xF, "float")] * 4 + [("z",)] * 2 + [("start",), ("z",)]
     else:
-        ops = build(kind, addr, data, ch)
+        ops = build(kind, addr, data, ch, rnd.choice([0, 0, 1, 3]))
     if claim_lat is None: claim_lat = rnd.uniform(14, CLAIM_MAX)
     host = Host(ops, rnd.uniform(0, LCLK_NS) + 40 * LCLK_NS, rnd)
     t = 0.0

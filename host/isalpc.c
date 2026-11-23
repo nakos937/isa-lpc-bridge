@@ -64,37 +64,37 @@ static u32 pci_r32(u8 r) { return (u32)pci_r16(r) | ((u32)pci_r16((u8)(r + 2)) <
 static void pci_w16(u8 r, u16 v) { pci_w8(r, (u8)v); pci_w8((u8)(r + 1), (u8)(v >> 8)); }
 
 /* ---- presets: "+lo-hi" is relative to the base (name=base on the command line), "@name" pulls another preset -------- */
-struct preset { const char *name; u16 base; const char *spec; const char *irq; const char *what; };
+struct preset { const char *name; u16 base; const char *spec; const char *irq; const char *what; u16 wlo, whi; };   /* wlo/whi: word read ports, base + offset (0/0 = none) */
 static const struct preset presets[] = {
-    {"adlib",    0,     "388-38B", "", "AdLib, OPL2/OPL3"},
-    {"sb",       0x220, "+0-F 388-38B 200-207", "", "Sound Blaster 1.x/2.0/Pro"},
-    {"sb16",     0x220, "+0-F 330-331 388-38B 200-207", "", "Sound Blaster 16"},
-    {"awe32",    0x220, "+0-F +400-403 +800-803 +C00-C03 330-331 388-38B 200-207", "", "AWE32/AWE64 (EMU8000 at base+400/800/C00)"},
-    {"gus",      0x240, "+0-F +100-10B +506-506", "", "Gravis UltraSound (ICS mixer at base+506)"},
-    {"gusmax",   0x240, "+0-F +100-10F +506-506", "", "UltraSound MAX (codec at base+10C)"},
-    {"guspnp",   0x240, "+0-F +100-10F 388-38B 330-331 200-207 @pnp", "", "UltraSound PnP, InterWave"},
-    {"orpheus2", 0x240, "220-22F 530-53F 388-38B 330-331 200-207 +0-F +100-10F @pnp", "", "Orpheus II (CS4237B + InterWave + PCMIDI at 330)"},
-    {"cs423x",   0x530, "+0-7 120-127 220-22F 388-38B 330-331 200-207 @pnp", "", "Crystal CS4232/4236/4237 (control port 120)"},
-    {"wss",      0x530, "+0-7 388-38B", "", "Windows Sound System, AD1848/CS4231"},
-    {"opl3sa",   0x220, "+0-F 530-537 388-38B 330-331 370-371 200-207 @pnp", "", "Yamaha OPL3-SA2/SA3 (YMF711/715/719)"},
-    {"ess",      0x220, "+0-F 388-38B 330-331 200-207 @pnp", "", "ESS ES688/1688/1868/1869"},
-    {"mpu401",   0x330, "+0-1", "", "MPU-401, Roland SCC-1"},
-    {"game",     0x200, "+0-7", "", "game port"},
-    {"pnp",      0,     "279-279 A79-A79 203-277", "", "ISA PnP ports (read port 203-277)"},
-    {"com1",     0x3F8, "+0-7", "4", "serial port card"},
-    {"com2",     0x2F8, "+0-7", "3", "serial port card"},
-    {"com3",     0x3E8, "+0-7", "4", "serial port card"},
-    {"com4",     0x2E8, "+0-7", "3", "serial port card"},
-    {"lpt1",     0x378, "+0-7", "7", "parallel port card"},
-    {"lpt2",     0x278, "+0-7", "5", "parallel port card"},
-    {"lpt3",     0x3BC, "+0-3", "7", "parallel port card (MDA address)"},
-    {"fdc",      0x3F0, "+0-5 +7-7", "6", "floppy controller (DMA 2)"},
-    {"fdc2",     0x370, "+0-5 +7-7", "6", "floppy controller, secondary address"},
-    {"ide1",     0x1F0, "+0-7 +206-206", "14", "IDE interface (onboard SATA must not be in legacy mode)"},
-    {"ide2",     0x170, "+0-7 +206-206", "15", "IDE interface, secondary"},
-    {"ne2000",   0x300, "+0-1F", "", "NE2000 network card"},
-    {"aha1542",  0x330, "+0-3", "11", "Adaptec AHA-154x SCSI"},
-    {"aha152x",  0x340, "+0-1F", "11", "Adaptec AHA-152x SCSI, SB16 SCSI-2"},
+    {"adlib",    0,     "388-38B", "", "AdLib, OPL2/OPL3", 0, 0},
+    {"sb",       0x220, "+0-F 388-38B 200-207", "", "Sound Blaster 1.x/2.0/Pro", 0, 0},
+    {"sb16",     0x220, "+0-F 330-331 388-38B 200-207", "", "Sound Blaster 16", 0, 0},
+    {"awe32",    0x220, "+0-F +400-403 +800-803 +C00-C03 330-331 388-38B 200-207", "", "AWE32/AWE64 (EMU8000 at base+400/800/C00)", 0x400, 0xC03},
+    {"gus",      0x240, "+0-F +100-10B +506-506", "", "Gravis UltraSound (ICS mixer at base+506)", 0x104, 0x104},
+    {"gusmax",   0x240, "+0-F +100-10F +506-506", "", "UltraSound MAX (codec at base+10C)", 0x104, 0x104},
+    {"guspnp",   0x240, "+0-F +100-10F 388-38B 330-331 200-207 @pnp", "", "UltraSound PnP, InterWave", 0x104, 0x104},
+    {"orpheus2", 0x240, "220-22F 530-53F 388-38B 330-331 200-207 +0-F +100-10F @pnp", "", "Orpheus II (CS4237B + InterWave + PCMIDI at 330)", 0x104, 0x104},
+    {"cs423x",   0x530, "+0-7 120-127 220-22F 388-38B 330-331 200-207 @pnp", "", "Crystal CS4232/4236/4237 (control port 120)", 0, 0},
+    {"wss",      0x530, "+0-7 388-38B", "", "Windows Sound System, AD1848/CS4231", 0, 0},
+    {"opl3sa",   0x220, "+0-F 530-537 388-38B 330-331 370-371 200-207 @pnp", "", "Yamaha OPL3-SA2/SA3 (YMF711/715/719)", 0, 0},
+    {"ess",      0x220, "+0-F 388-38B 330-331 200-207 @pnp", "", "ESS ES688/1688/1868/1869", 0, 0},
+    {"mpu401",   0x330, "+0-1", "", "MPU-401, Roland SCC-1", 0, 0},
+    {"game",     0x200, "+0-7", "", "game port", 0, 0},
+    {"pnp",      0,     "279-279 A79-A79 203-277", "", "ISA PnP ports (read port 203-277)", 0, 0},
+    {"com1",     0x3F8, "+0-7", "4", "serial port card", 0, 0},
+    {"com2",     0x2F8, "+0-7", "3", "serial port card", 0, 0},
+    {"com3",     0x3E8, "+0-7", "4", "serial port card", 0, 0},
+    {"com4",     0x2E8, "+0-7", "3", "serial port card", 0, 0},
+    {"lpt1",     0x378, "+0-7", "7", "parallel port card", 0, 0},
+    {"lpt2",     0x278, "+0-7", "5", "parallel port card", 0, 0},
+    {"lpt3",     0x3BC, "+0-3", "7", "parallel port card (MDA address)", 0, 0},
+    {"fdc",      0x3F0, "+0-5 +7-7", "6", "floppy controller (DMA 2)", 0, 0},
+    {"fdc2",     0x370, "+0-5 +7-7", "6", "floppy controller, secondary address", 0, 0},
+    {"ide1",     0x1F0, "+0-7 +206-206", "14", "IDE interface (onboard SATA must not be in legacy mode)", 0x0, 0x1},
+    {"ide2",     0x170, "+0-7 +206-206", "15", "IDE interface, secondary", 0x0, 0x1},
+    {"ne2000",   0x300, "+0-1F", "", "NE2000 network card", 0x10, 0x11},
+    {"aha1542",  0x330, "+0-3", "11", "Adaptec AHA-154x SCSI", 0, 0},
+    {"aha152x",  0x340, "+0-1F", "11", "Adaptec AHA-152x SCSI, SB16 SCSI-2", 0x16, 0x17},
 };
 #define NPRESET (sizeof presets / sizeof presets[0])
 
@@ -106,7 +106,9 @@ static int have_irq_set, have_ports, opt_dry, opt_force, opt_dma = DMA_DEFAULT, 
 static u16 opt_gpio, gpio_from;
 static u16 iod, en, pmbase, gpiobase;
 static u32 pciirq;
-static u32 gen[4], gen0[4];                     /* planned / as the BIOS left them */
+static u32 gen[4], gen0[4];
+static u32 word_rd[3];                         /* firmware word_rd: first | last << 16 */
+static int nword;                     /* planned / as the BIOS left them */
 static u8 gen_kept[4];
 static int fix_steal, opt_keepsirq, opt_nopirq, opt_save, opt_forget;
 static const u16 comr[8] = {0x3F8, 0x2F8, 0x220, 0x228, 0x238, 0x2E8, 0x338, 0x3E8};
@@ -143,6 +145,15 @@ static int add_preset(const char *name, int len, u16 base, int depth) {
     for (i = 0; i < NPRESET; i++) if ((int)strlen(presets[i].name) == len && !strncmp(presets[i].name, name, len)) break;
     if (i == NPRESET || depth > 3) return -1;
     if (!base) base = presets[i].base;
+    if (presets[i].whi) {
+        u32 r = (u32)(base + presets[i].wlo) | ((u32)(base + presets[i].whi) << 16);
+        int k;
+        for (k = 0; k < nword && word_rd[k] != r; k++) ;
+        if (k == nword) {
+            if (nword == 3) { printf("more than 3 word port ranges (%s)\n", presets[i].name); return 1; }
+            word_rd[nword++] = r;
+        }
+    }
     for (s = presets[i].spec; *s; ) {
         int n = 0;
         while (*s == ' ') s++;
@@ -177,11 +188,16 @@ static int fixed_covers(u16 d, u16 e, u16 p) {              /* LPC_I/O_DEC, LPC_
     if ((e & 1) && (p & 0xFFF8) == comr[d & 7]) return 1;
     if ((e & 2) && (p & 0xFFF8) == comr[(d >> 4) & 7]) return 1;
     if ((e & 4) && lpt == 0 && (p & 0xFBF8) == 0x378) return 1;
-    if ((e & 4) && lpt == 2 && (p & 0xFBFC) == 0x3BC) return 1;    /* 278 is left out: the PCH makes 279 read only, PnP writes it */
-    if ((e & 8) && (p & 0xFFF8) == ((d & 0x1000) ? 0x370 : 0x3F0)) return 1;
+    if ((e & 4) && lpt == 2 && (p & 0xFBFC) == 0x3BC && (p & 3) != 3) return 1;    /* 278 is left out: the PCH makes 279 read only, PnP writes it */
+    if ((e & 8) && (p & 0xFFF8) == ((d & 0x1000) ? 0x370 : 0x3F0) && (p & 7) != 6) return 1;   /* FDD: 3F0-3F5, 3F7 (PCH LPC_I/O_DEC) */
     if ((e & 0x100) && (p & 0xFFF8) == 0x200) return 1;
     if ((e & 0x200) && (p & 0xFFF8) == 0x208) return 1;
     return 0;
+}
+static int dw_fixed(u16 d, u16 e, u16 p) {                  /* every requested port of the DWord at p */
+    u16 i;
+    for (i = 0; i < 4; i++) if (getbit(allow, p + i) && !fixed_covers(d, e, (u16)(p + i))) return 0;
+    return 1;
 }
 static int gen_covers(u32 g, u16 p) {
     u16 mask = (u16)((g >> 16) & 0xFC) | 3;
@@ -238,7 +254,7 @@ static int fixed_try(u16 p, u16 *pd, u16 *pe, u16 *used, int steal) {
     if ((p & 0xFFF8) == 0x378 || (p & 0xFFFC) == 0x3BC) { bit = 4; cur = lptr[(d >> 8) & 3]; d = (u16)((d & ~0x300) | ((p & 0xFFF8) == 0x378 ? 0 : 0x200)); }
     else if ((p & 0xFFF8) == 0x3F0 || (p & 0xFFF8) == 0x370) { bit = 8; cur = (d & 0x1000) ? 0x370 : 0x3F0; d = (u16)((d & ~0x1000) | ((p & 0xFFF8) == 0x370 ? 0x1000 : 0)); }
     else return 0;
-    if ((*used & bit) || ((e & bit) && (!steal || getbit(need0, cur >> 2)))) return 0;
+    if ((*used & bit) || ((e & bit) && (!steal || getbit(need0, cur >> 2))) || !dw_fixed(d, (u16)(e | bit), p)) return 0;
     *pd = d; *pe = (u16)(e | bit); *used |= bit;
     return 1;
 }
@@ -248,7 +264,7 @@ static int page_to_fixed(u16 pg, u16 *pd, u16 *pe) {
     u16 d = *pd, e = *pe, i, p, used = 0;
     for (i = 0; i < 64; i++) {
         p = (u16)((pg << 8) | (i << 2));
-        if (getbit(need, p >> 2) && !fixed_covers(d, e, p) && !fixed_try(p, &d, &e, &used, 1)) return 0;
+        if (getbit(need, p >> 2) && !dw_fixed(d, e, p) && !fixed_try(p, &d, &e, &used, 1)) return 0;
     }
     for (i = 0; i < 64; i++) setbit(need, ((u32)pg << 6) | i, 0);
     *pd = d; *pe = e;
@@ -284,7 +300,7 @@ static int plan(int nsteal, int final) {
     for (d = 0x40; d < 0x4000; d++) {
         if (!getbit(need, d)) continue;
         p = (u16)(d << 2);
-        if (fixed_covers(nd, ne, p) || fixed_try(p, &nd, &ne, &used, 0)) setbit(need, d, 0);
+        if (dw_fixed(nd, ne, p) || fixed_try(p, &nd, &ne, &used, 0)) setbit(need, d, 0);
         for (i = 0; i < 4; i++) if (gen_kept[i] && gen_covers(gen0[i], p)) setbit(need, d, 0);
     }
     for (pg = 1; pg < 0x100 && pages_needed() > nfree; pg++)
@@ -375,7 +391,9 @@ static void bridge(void) {
         br_seek(0x2C);
         for (i = 0; i < 4; i++) io_w8(0x4F, (u8)(nf >> (8 * i)));
         frames = nf;
-        printf(" Port filter and IRQ list written.");
+        br_seek(0x34);                                      /* word_rd[]: 16 bit data ports of the selected cards */
+        for (i = 0; i < 12; i++) io_w8(0x4F, (u8)(word_rd[i >> 2] >> (8 * (i & 3))));
+        printf(" Port filter, IRQ list and word ports written.");
         if (opt_nopirq) {                                   /* PCI interrupt routing off for the IRQs the bridge serves */
             static const u8 pirq[8] = {0x60, 0x61, 0x62, 0x63, 0x68, 0x69, 0x6A, 0x6B};
             for (i = 0; i < 8; i++) {

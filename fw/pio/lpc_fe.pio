@@ -12,23 +12,16 @@
 ;   DMA write  : [31:12]=F  [11:8] type A     [7:4] channel (+TC in bit 7)     [3:0] size                  (peripheral -> host)
 ; Reads / DMA read / DMA write: the response starts 3 rising edges after the last sampled clock; lpc_tx does it.
 ;
-; Only START 0000 is taken (sampled in the first LFRAME# clock): TPM (0101), firmware hub and bus master cycles are skipped.
-; The dispatch table sits in slots 16..31 (mov pc, isr: ISR[4:0] = 1 + CYCTYPE nibble): this program MUST be loaded at offset 0.
+; Only START 0000 is taken, sampled in the last LFRAME# clock (LPC 1.1 4.2.1.1): TPM (0101), firmware hub, bus master and abort
+; cycles are skipped. The dispatch table sits in slots 16..31 (mov pc, isr: ISR[4:0] = 1 + CYCTYPE nibble): this program MUST
+; be loaded at offset 0.
 .pio_version 1
 .program lpc_fe
 
-.wrap_target
-public idle:
-    wait 0 pin 4        ; LFRAME# low: START
-    wait 0 pin 5        ; low half of that clock
-    mov osr, pins
-    out y, 4            ; START nibble
-    wait 1 pin 4        ; LFRAME# high: the next clock carries CYCTYPE
+cyc:
+    out y, 4            ; START of the last LFRAME# clock
     jmp y--, idle       ; not a target cycle
-    mov isr, !null      ; all ones: the position of the leading ones tells the cycle type apart
-    wait 0 pin 5        ; falling edge of that clock
-    in pins, 4
-    mov pc, isr         ; dispatch on the nibble
+    mov pc, isr         ; dispatch on the CYCTYPE nibble
 coll:
     wait 1 pin 5
     wait 0 pin 5
@@ -36,6 +29,16 @@ coll:
     jmp x--, coll
     push
     irq next set 0      ; wakes lpc_tx
+public idle:
+    wait 0 pin 4        ; LFRAME# low: START
+.wrap_target
+samp:
+    wait 0 pin 5        ; low half of this clock
+    mov isr, !null      ; all ones: the position of the leading ones tells the cycle type apart
+    in pins, 4
+    jmp pin, cyc        ; LFRAME# high: this nibble is CYCTYPE
+    mov osr, isr        ; LFRAME# still low: this nibble is the START candidate
+    wait 1 pin 5
 .wrap
     set x, 3            ; 16 type 0000 I/O read      : 4 address nibbles
     jmp coll            ; 17

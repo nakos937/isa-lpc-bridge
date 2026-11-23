@@ -67,14 +67,14 @@
   "src": "LCSC listing"
  },
  "BLM31KN601SN1L|L_1206_3216Metric": {
-  "mpn": "BLM31KN601SH1L",
-  "lcsc": "C237603",
-  "src": "JLC library 2026-11-11: 215 in stock; same Murata part in the SH grade (600 ohm, 2.9 A, 38 mohm). C668306 (SN1L) had 2 left, 3 needed per board"
+  "mpn": "BLM31KN601SN1L",
+  "lcsc": "C668306",
+  "src": "JLC parts API 2026-11-23: C237603 (SH1L) 0 in stock, C668306 (SN1L, the netlist part) 4650; 600 ohm, 2.9 A, 38 mohm"
  },
  "BLM21PG221SN1D|L_0805_2012Metric": {
-  "mpn": "BLM21PG221SN1D",
-  "lcsc": "C85840",
-  "src": "LCSC listing"
+  "mpn": "BLM21PG221SH1D",
+  "lcsc": "C88994",
+  "src": "JLC parts API 2026-11-23: C85840 (SN1D) 0 in stock, C88994 (SH1D, same Murata bead) 26876; 220 ohm, 2 A, 45 mohm"
  },
  "22u/25V|C_1210_3225Metric": {
   "mpn": "GRM32ER71E226KE15L (X7R)",

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Independent clearance audit (own distance maths for tracks and vias; KiCad shapes only for pads and zone fills).
-# JLC multilayer limits: copper to copper 0.09, pad to track 0.1, via hole to other-net copper 0.2 (tracks, inner-layer copper), hole to hole 0.2.
+# JLC multilayer limits: copper to copper 0.09, pad to track 0.1, via hole to other-net copper 0.2, hole to hole 0.2, PTH hole to track 0.28, inner PTH hole to copper 0.3.
 import pcbnew, sys, math, collections
 mm = pcbnew.ToMM; F = pcbnew.FromMM
 b = pcbnew.LoadBoard(sys.argv[1])
@@ -76,5 +76,27 @@ for i, s in enumerate(T):
                 seen.add(j); o = T[j]
                 if o[5] == s[5] or o[6] != s[6]: continue
                 note('track to other-net track', segseg(s, o) - s[4] - o[4], (round(s[0], 2), round(s[1], 2)), 0.09)
+# component PTH holes: JLC PTH to track 0.28, inner-layer PTH hole to copper 0.3
+for p in pads:
+    if p.GetAttribute() != pcbnew.PAD_ATTRIB_PTH or p.GetDrillSizeX() == 0: continue
+    hs = p.GetEffectiveHoleShape(); net = p.GetNetCode(); where = (round(mm(p.GetPosition().x), 3), round(mm(p.GetPosition().y), 3))
+    for t in b.GetTracks():
+        if t.GetNetCode() == net or not hs.Collide(t.GetEffectiveShape(t.GetLayer() if t.Type() != pcbnew.PCB_VIA_T else pcbnew.F_Cu), F(0.5)): continue
+        sh = t.GetEffectiveShape(t.GetLayer() if t.Type() != pcbnew.PCB_VIA_T else pcbnew.F_Cu); lo, hi = 0.0, 0.5
+        for _ in range(14):
+            mid = (lo + hi) / 2
+            if hs.Collide(sh, F(mid)): hi = mid
+            else: lo = mid
+        note('PTH hole to other-net track/via', lo, where, 0.28)
+    for z, l in zones:
+        if z.GetNetCode() == net or l not in (pcbnew.In1_Cu, pcbnew.In2_Cu): continue
+        fp = z.GetFilledPolysList(l)
+        if not fp.Collide(hs, F(0.5)): continue
+        lo, hi = 0.0, 0.5
+        for _ in range(14):
+            mid = (lo + hi) / 2
+            if fp.Collide(hs, F(mid)): hi = mid
+            else: lo = mid
+        note('PTH hole to other-net inner copper', lo, where, 0.3)
 print(sys.argv[1].split('/')[-1])
 for k in sorted(m): print('  %-44s min %.4f mm at %s   below limit: %d' % (k, m[k][0], m[k][1], cnt[k]))

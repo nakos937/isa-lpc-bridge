@@ -3,7 +3,7 @@
 Status: builds clean, simulated, not run on the board.
 
 ## Architecture
-- `pio/lpc_fe.pio` (PIO0): LPC front end. Samples LAD on the falling LCLK edge, parses I/O read/write and 8 bit DMA read/write
+- `pio/lpc_fe.pio` (PIO0): LPC front end. Samples LAD on the falling LCLK edge, parses I/O read/write and 8/16 bit DMA read/write
   cycles into one 32 bit word, raises IRQ 0 of PIO1.
 - Core 1 (`core1_claim` in `src/lpc.c`): reads every front end word and claims ours (port not in `deny[]`, DMA channel we
   requested) by queueing a wait-state SYNC word within 3 LCLK; passes claimed words to core 0. Other cycles (the board's Super
@@ -17,7 +17,7 @@ Status: builds clean, simulated, not run on the board.
   coprocessor, IOCHRDY, DMA with DACK.
 - `src/io16.c`: 16 bit I/O on ports that answer IOCS16# (sensed through the 165 chain after each address change, HG25): the PCH's
   two byte cycles to a port pair become one 16 bit ISA cycle (SBHE# low); a lone byte uses the AT byte lane. Writes pair on
-  every such port; reads only in the `word_rd` ranges (EMU8000 and InterWave base 240 data ports by default), since a word read also reads
+  every such port; reads only in the `word_rd` ranges (EMU8000 and InterWave base 240 data ports by default; `isalpc` sets them from the presets), since a word read also reads
   port + 1.
   Test: `cc -Isrc -o /tmp/t test/io16_test.c && /tmp/t`.
 - `src/lpc.c` (core 0): serves the claimed words: I/O writes are acknowledged first (posted) and executed after; reads and DMA wait
@@ -74,7 +74,7 @@ BALE control (held high), OSC (B30 = 14.318 MHz oscillator, not firmware control
   serirq_kick). Polarity per the X99 PCH datasheet: an IRQ frame is driven low while the ISA IRQ
   line is low, released while it is high; IOCHCK# frame low = asserted. Only frames in `irq_frames` are served (default 3, 5,
   7, 9, 10, 11, 15, IOCHCK#): the Super I/O owns the rest (COM1 IRQ4, PS/2 mouse IRQ12).
-  PIO instruction memory: FE 30, TX 27, AUX 26 of 32, further LPC features need a redesign.
+  PIO instruction memory: FE 32, TX 27, AUX 30 of 32, further LPC features need a redesign.
 - No memory cycles, no bus master, no firmware hub cycles.
 - Wait-state SYNC is 0110 (long). Some hosts abort after 8 clocks of 0101; AMD AM4 behaviour is the open question
   (docs/review-30rounds.md rounds 4-5). `F_SYNC_SHORT` selects 0101.
@@ -103,7 +103,8 @@ does both, on DOS (`ISALPC.EXE`, in AUTOEXEC.BAT before the sound drivers) and o
   systems expect the old address. Ports inside PMBASE are refused.
 - Bridge, through its config port 4E/4F (`src/cfgport.c`: index port takes 'I' 'S' 'A' and a 16 bit offset, the data port
   then reads or writes `fw_dbg_t` bytes): `deny[]` becomes "everything but the ports of the selected cards", `irq_frames`
-  gets the IRQs of the presets (or `irq=` exactly). The settings live in RAM: run the tool after every power-up.
+  gets the IRQs of the presets (or `irq=` exactly), `word_rd[]` the 16 bit data ports of the presets (IDE, NE2000,
+  AHA-152x, EMU8000, GUS at the given base). The settings live in RAM: run the tool after every power-up.
   `F_NO_CFGPORT` gives 4E/4F back to the slot.
 - Four GEN ranges cover one xx00-xxFF block each. Cards with ports in more blocks than that do not fit: Pro Audio Spectrum 16
   (19 blocks, Linux `pas2_*.c`), AWE32 together with ISA PnP. The tool says which blocks are left over.

@@ -41,10 +41,10 @@ typedef struct {
                                         //       word cycle and keeps the high byte for the IN to port + 1; elsewhere a byte cycle, as on an AT
 
     uint8_t  deny[8192];                // +0x40 port filter: bit set = cycle not claimed (left to the Super I/O or to the host abort)
-    uint32_t t_cmd8_ns;                 // +0x2040 IOR#/IOW# low time of an 8 bit I/O cycle (Ampro table 1, 8d: 530)
-    uint32_t t_dma_cmd_ns;              // +0x2044 IOR#/IOW# low time of a DMA cycle (table 2, 11a/12: 786/489)
-    uint32_t t_dack_setup_ns;           // +0x2048 DACK#/AEN valid before the DMA strobe (1b: 310)
-    uint32_t t_dack_hold_ns;            // +0x204C DACK#/AEN/TC held after the DMA strobe (13b: 162)
+    uint32_t t_cmd8_ns;                 // +0x2040 IOR#/IOW# low time of an 8 bit I/O cycle (Ampro table 1, 8d driver min: 541)
+    uint32_t t_dma_cmd_ns;              // +0x2044 IOR#/IOW# low time of a DMA cycle (table 2, 11a/12 driver min: 797/500)
+    uint32_t t_dack_setup_ns;           // +0x2048 DACK#/AEN valid before the DMA strobe (1b driver min: 321)
+    uint32_t t_dack_hold_ns;            // +0x204C DACK#/AEN/TC held after the DMA strobe (13b driver min: 173)
 } fw_cfg_t;
 
 typedef struct {

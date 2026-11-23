@@ -37,7 +37,7 @@ static void bios(unsigned gpiobase_) {                       // state after POST
 static int run(const char *args) {
     static char buf[200]; char *argv[20]; int argc = 1;
     memset(allow, 0, sizeof allow); memset(need, 0, sizeof need); irq_add = irq_set = 0;
-    have_irq_set = have_ports = opt_dry = opt_force = opt_ldrq1 = 0; opt_dma = 0; opt_gpio = gpio_from = 0; fix_steal = opt_keepsirq = opt_nopirq = opt_save = opt_forget = 0; pcmd = 0; pbusy = 0;
+    have_irq_set = have_ports = opt_dry = opt_force = opt_ldrq1 = 0; opt_dma = 0; opt_gpio = gpio_from = 0; fix_steal = opt_keepsirq = opt_nopirq = opt_save = opt_forget = 0; pcmd = 0; pbusy = 0; nword = 0; memset(word_rd, 0, sizeof word_rd);
     strcpy(buf, args); argv[0] = "isalpc";
     for (char *t = strtok(buf, " "); t; t = strtok(NULL, " ")) argv[argc++] = t;
     printf("--- isalpc %s\n", args);
@@ -77,6 +77,12 @@ int main(void) {
     assert(fwd(0x3F8) && fwd(0x378) && fwd(0x3F5) && fwd(0x3F7) && fwd(0x726) && fwd(0x32B) && !denied(0x3F8) && !denied(0x3F7) && denied(0x3F6));
     assert((pci_r16(0x82) & 8) && !fwd(0x3B0) && !fwd(0x3A0));                              // floppy on the FDD decode, no stray window
 
+    bios(0x1C00);                                                                           // FDD decode skips 3F6, LPT 3BC decode skips 3BF
+    assert(run("ide1") == 0 && fwd(0x1F0) && fwd(0x3F6) && fwd(0x3F7));
+    bios(0x1C00);
+    assert(run("lpt3") == 0 && fwd(0x3BC) && fwd(0x3BF));
+    assert(!fixed_covers(0x1000, 8, 0x376) && fixed_covers(0x1000, 8, 0x377) && !fixed_covers(0x200, 4, 0x3BF));
+
     bios(0x500);                                                                            // 530 sits in the PCH GPIO block here
     assert(run("wss dry") == 0 && pci_r16(0x48) == 0x501 && g32(0x88) == 0);
     assert(run("wss ldrq1") == 0 && pci_r16(0x48) == 0x681 && fwd(0x530) && fwd(0x537) && !denied(0x534) && !fwd(0x680));
@@ -114,6 +120,11 @@ int main(void) {
     X99();
     assert(run("awe32 force") == 0 && fwd(0x620) && fwd(0xA20) && fwd(0xE20) && fwd(0x220) && fwd(0x388));
     assert(!fwd(0x295) && !fwd(0x3F8));                                                     // five blocks: costs the hardware monitor range and both COM decodes
+    bios(0x1C00); test_dbg.cfg.word_rd[1] = 0x344u | 0x344u << 16;                        // word reads follow the presets, not the firmware default
+    assert(run("gus=220") == 0 && test_dbg.cfg.word_rd[0] == (0x324u | 0x324u << 16) && !test_dbg.cfg.word_rd[1]);
+    bios(0x1C00); assert(run("ide2 gus force") == 0 && test_dbg.cfg.word_rd[0] == (0x170u | 0x171u << 16) && test_dbg.cfg.word_rd[1] == (0x344u | 0x344u << 16));
+    bios(0x1C00); test_dbg.cfg.word_rd[0] = 1; assert(run("sb16") == 0 && !test_dbg.cfg.word_rd[0]);
+    bios(0x1C00); assert(run("sb16 dry") == 0 && !test_dbg.cfg.word_rd[0]);
     puts("isalpc ok");
     return 0;
 }

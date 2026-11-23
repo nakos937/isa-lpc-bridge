@@ -281,6 +281,7 @@ void RAM_FUNC(lpc_service_drq)(void) {
         unsigned ch = chans[i];
         bool req = (d >> ch) & 1u;
         bool pend = (drq_pending >> ch) & 1u;
+        if (pio_sm_is_tx_fifo_full(PIO_AUX, SM_LDRQ)) break;          // a lost message would leave the host's view stale; next pass sends it
         if (req && !pend && now - drq_quiet_from[ch] >= drq_quiet_cyc) {   // elapsed, not a deadline: a stale stamp must not block
             drq_pending |= 1u << ch;
             drq_claim |= 1u << ch;                                   // before the message: core 1 claims the host's DMA cycle by it
@@ -326,6 +327,7 @@ void lpc_init(void) {
     int off_fe = pio_add_program_at_offset(PIO_FE, &lpc_fe_program, 0);
     pio_sm_config c = lpc_fe_program_get_default_config(off_fe);
     sm_config_set_in_pin_base(&c, PIN_LAD0);
+    sm_config_set_jmp_pin(&c, PIN_LFRAME_N);
     sm_config_set_in_shift(&c, false, false, 32);          // ISR shifts left, no autopush
     sm_config_set_out_shift(&c, true, false, 32);
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
