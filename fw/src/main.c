@@ -40,7 +40,7 @@
   #endif
 #endif
 #define FLASH_MAX_KHZ 66000          // in-package W25Q16JV, kept well below its 133 MHz limit
-#define BUILD 18
+#define BUILD 19
 
 // fixed RAM address, outside the linker's view (image is far below 0x2007C000, stacks sit at 0x20080000): survives a reload
 extern void mailbox_poll(void);
@@ -51,7 +51,7 @@ static void defaults(void) {
     dbg.cfg.t_cmd_ns = 400;
     dbg.cfg.t_addr_setup_ns = 120;
     dbg.cfg.t_hold_ns = 60;
-    dbg.cfg.t_rdy_timeout_ns = 15000;
+    dbg.cfg.t_rdy_timeout_ns = 16000;       // Ampro table 1 row 21: a card may hold IOCHRDY low 15.6 us
     {   // 595/165 chain: at least 12 ns per half clock; 5 sys clocks are fixed, each extra turn adds about 4
         uint32_t n = (12u * (clock_get_hz(clk_sys) / 1000000u) + 999u) / 1000u;
         dbg.cfg.chain_nops = n > 5 ? (n - 2) / 4 : 0;

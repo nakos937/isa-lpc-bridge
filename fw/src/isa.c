@@ -383,14 +383,14 @@ void isa_init(void) {
         gpio_set_drive_strength(PIN_IOR_N, GPIO_DRIVE_STRENGTH_8MA);
         gpio_set_drive_strength(PIN_IOW_N, GPIO_DRIVE_STRENGTH_8MA);
     }
-    // inputs: external pulls only (RP2350-E9: the internal pull-down is not reliable)
+    // inputs: the board has the pulls
     const uint ins[] = {PIN_CH_MISO, PIN_IOCHRDY, PIN_DRQ0, PIN_DRQ1, PIN_DRQ2, PIN_DRQ3, PIN_DRQ5, PIN_DRQ6, PIN_DRQ7};
     for (unsigned i = 0; i < sizeof ins / sizeof ins[0]; i++) {
         gpio_init(ins[i]);
         gpio_set_dir(ins[i], GPIO_IN);
         gpio_disable_pulls(ins[i]);
     }
-    gpio_init(PIN_PCIRST_N);                // host drives it push-pull; the pull-up keeps it out of the E9 leakage band with no host attached
+    gpio_init(PIN_PCIRST_N);                // host drives it push-pull; the pull-up holds it high with no host attached
     gpio_set_dir(PIN_PCIRST_N, GPIO_IN);
     gpio_pull_up(PIN_PCIRST_N);
     for (uint p = PIN_SD0; p < PIN_SD0 + 16; p++) {

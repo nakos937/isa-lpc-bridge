@@ -358,7 +358,7 @@ R("33", bq_raw, bq)                                                      # sourc
 
 # ---- HG23 additions (appended last so no existing reference moves) ----------------------------------------------------------
 for _n in SERIES_MCU: R("33", N("M_" + _n + "_o"), S(_n))                # source termination at the MCU pins: SCK 147 mm, IOR#/IOW# 135 mm, LCLK 160 mm
-# DRQ idle-low pull-downs: RP2350-E9 needs <= 8.2 kohm incl. tolerance, 4.7k arrays (same part as RN3/RN4)
+# DRQ idle-low pull-downs: 4.7k arrays (same part as RN3/RN4)
 for _p in list(default_circuit.parts):
     if _p.name == "R_Pack04" and any(getattr(_pin.net, "name", "").startswith("DRQ") for _pin in _p.pins):
         _p.value = "4.7k"

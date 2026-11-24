@@ -55,7 +55,7 @@ Only SWD is wired (J2), no BOOTSEL/USB. To avoid flashing:
 ## Hardware coverage (what the board can do, and what the firmware does with it)
 | Board function | Firmware |
 |---|---|
-| ISA 8 bit I/O read/write (SA0-15, IOR#/IOW#, IOCHRDY wait, 15 us timeout) | LPC I/O cycles, writes posted; port filter bitmap |
+| ISA 8 bit I/O read/write (SA0-15, IOR#/IOW#, IOCHRDY wait, 16 us timeout) | LPC I/O cycles, writes posted; port filter bitmap |
 | IRQ3-7, 9-12, 14, 15, IOCHCK# (165 chain) | SERIRQ frames 3-15 and 16 (IOCHCK#), pulse stretching (`irq_hold_us`, 30 us) |
 | DRQ0-3 (8 bit), DRQ5-7 (16 bit), DACK0-7, TC, AEN | LDRQ# messages, 8 and 16 bit DMA both directions, TC, "more" SYNC from the DRQ state, 8 LCLK rule |
 | RESETDRV = NAND(ISA_RUN, PCIRST#) | held until the chain is loaded; PCIRST# edges restart all PIO engines and forget DMA/IRQ state |
@@ -78,7 +78,7 @@ BALE control (held high), OSC (B30 = 14.318 MHz oscillator, not firmware control
 - Wait-state SYNC is always 0110 (long, no host timeout in LPC 1.1 4.2.1.9).
 - 400 MHz default: working window 340..500 MHz in the simulator. Core 1 claim latency not measured on silicon (trace the SYNC
   start clock with a logic analyser).
-- RP2350-E9: DRQ lines rely on the external 4.7k pull-downs, the firmware never enables internal pull-downs.
+- DRQ lines rely on the board's 4.7k pull-downs; the firmware enables no internal pulls.
 
 ## Host setup
 The PCH forwards only decoded ranges to LPC, and the bridge must claim only the ports of the card in the slot. `host/isalpc`
