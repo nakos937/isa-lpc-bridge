@@ -96,10 +96,9 @@ for _p in u3.pins: _p.num = {"1": "3", "2": "1", "3": "2"}.get(str(_p.num), str(
 u3["VI"] += V5_LDO; u3["GND"] += GND; u3["VO"] += V3
 C("22u/10V", V3, GND, "c1206"); C("22u/10V", V3, GND, "c1206")
 FBEAD(V3, V3_OSC); C("10u/10V", V3_OSC, GND, "c0805")                        # oscillator rail: 3V3 through a ferrite bead and 10u instead of a second LDO
-# LT3045/LT3042: EP pin 13/11 are GND per symbol (handled by the 'GND' name above)
 
 # ================================================================================================
-# 3. NEGATIVE RAILS: one ADP5071 inverter (ADP5070 pin-compatible, 1.2 A inverter switch: ~10 % margin became ~3x) (+12 V -> about -14 V), then LT3094 post-regulators for -12 V and -5 V.
+# 3. NEGATIVE RAILS: one ADP5071 inverter (ADP5070 pin-compatible, 1.2 A inverter switch: ~10 % margin became ~3x) (+12 V -> -12 V), MC79M05 for -5 V.
 #    Values from the ADP5070/ADP5071 datasheets: Table 8 resistors, Table 9 common parts (CIN1 10u, CVREG 1u, CVREF 1u), inductor/COMP for the inverter.
 #    Boost half unused: EN1 low; PVIN1 tied to PVIN2 (datasheet requires the pins supplied).
 # ================================================================================================
@@ -122,7 +121,6 @@ C("1u/16V", ub["VREG"], GND, "c0603"); C("1u/16V", ub["VREF"], GND, "c0603")
 for _ in range(2): C("10u/25V", V12_PUMP, GND, "c1206")               # CIN1 per Table 9
 C("100n", V12_PUMP, GND); C("1u/25V", ub["PVINSYS"], GND, "c0603")   # datasheet layout: separate cap on PVINSYS for best noise
 ub["FB1"] += GND; ub["COMP1"] += NC; ub["INBK"] += NC; ub["SW1"] += NC
-# inverter: L2 + D2 + COUT2, feedback to -14 V ref: Table 8 gives -13.0 V with 2.8 M / 162 k; -14 V needs VNEG = -(VREF-VFB2)*(1+RFT2/RFB2)+...  see note
 SW2N = N("SW2_INV"); ub["SW2"] += SW2N                              # named so the router can give the inverter switch node a power width (peak inductor current 1.2-1.4 A)
 l2 = Part("Device", "L", value="15u NR4030S150MT", footprint="isa_bridge:L_NR4030"); l2[1] += SW2N; l2[2] += GND
 d2 = Part("Device", "D_Schottky", value="DFLS240", footprint=FP["d"]); d2["A"] += VNEG_RAW; d2["K"] += SW2N

@@ -1,6 +1,6 @@
 # ISA-LPC bridge firmware (RP2354B)
 
-Status: builds clean, simulated, not run on the board.
+Status: builds clean, simulated, runs on the PASS_HG25 board.
 
 ## Architecture
 - `pio/lpc_fe.pio` (PIO0): LPC front end. Samples LAD on the falling LCLK edge, parses I/O read/write and 8/16 bit DMA read/write

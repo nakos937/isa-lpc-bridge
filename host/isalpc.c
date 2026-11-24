@@ -177,7 +177,7 @@ static int add_token(const char *t, u16 base, int depth) {
     hi = lo;
     if (e == t || (*t == '+' && e == t + 1)) { printf("unknown preset or range '%s' (try: isalpc list)\n", t); return 1; }
     if (*e == '-') hi = strtoul(e + 1, &e, 16);
-    if (*e) { printf("bad range '%s'\n", t); return 1; }
+    if (*e) { printf("unknown preset or range '%s' (try: isalpc list)\n", t); return 1; }
     if (*t == '+') { lo += base; hi += base; }
     return add_range(lo, hi);
 }

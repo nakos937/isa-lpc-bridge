@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Board definition for the RP2354B ISA-LPC bridge (pcb/krt/PASS_HG23). No UART/LED/USB: only SWD (J2).
+// Board definition for the RP2354B ISA-LPC bridge (pcb/krt/PASS_HG25). No UART/LED/USB: only SWD (J2).
 #ifndef _BOARDS_ISA_LPC_BRIDGE_H
 #define _BOARDS_ISA_LPC_BRIDGE_H
 
