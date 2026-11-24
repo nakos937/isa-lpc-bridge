@@ -185,8 +185,8 @@ DMA (digitised sound in DOS games, SB/GUS sample playback) will not.
 8. Support the board before inserting the card (see [Mounting](#mounting-it-in-a-case)).
 
 ## Firmware
-Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja). Pre-built images of build 16:
-[`fw/prebuilt/`](fw/prebuilt/) (`isa_lpc_flash_build16.elf`, `isa_lpc_ram_build16.elf`).
+Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja). Pre-built images of build 17:
+[`fw/prebuilt/`](fw/prebuilt/) (`isa_lpc_flash_build17.elf`, `isa_lpc_ram_build17.elf`).
 
 - **Architecture:** three PIO blocks implement the LPC target (front end, reply script player, LDRQ#/SERIRQ engines);
   core 1 claims LPC cycles within the 3-clock SYNC deadline; core 0 runs the ISA bus (address through the shift
@@ -218,8 +218,7 @@ ISALPC LIST                 all presets
 ```
 Options: `SAVE` stores the bridge settings in its flash (`FORGET` erases them), `FORCE` replaces decode windows the BIOS set (as few as needed, highest window first, and it says which),
 `DRY` changes nothing, `DMA` resets the DMA controllers (default on DOS), `LDRQ1` switches the GPIO pad to LDRQ1#,
-`NOPIRQ` stops routing PCI interrupts to the IRQs the bridge serves, `KEEPSIRQ` leaves the Serial IRQ mode alone (the
-default is continuous mode), `IRQ=5,7` sets the served IRQs exactly, `GPIO=680` chooses where the chipset GPIO block moves
+`NOPIRQ` stops routing PCI interrupts to the IRQs the bridge serves, `IRQ=5,7` sets the served IRQs exactly, `GPIO=680` chooses where the chipset GPIO block moves
 when a card needs ports inside it (**DOS only**: ACPI operating systems expect the old address).
 
 Limits you will hit: four decode windows of up to 256 ports each, one 256-port block per window; port 279 (ISA PnP address)
@@ -233,7 +232,7 @@ Linux: `cc -O2 -o isalpc host/isalpc.c`, run as root. DOS: `make -C host ISALPC.
   and DMA channels and some use LPC windows the card needs. Keep CSM/legacy boot and legacy USB (for a DOS keyboard).
 - No setup option reserves an IRQ for ISA cards: a PCI device can land on the card's IRQ. `ISALPC` lists the IRQs PCI uses
   and `NOPIRQ` can take them away from PCI.
-- Set Serial IRQ to **continuous** mode. `ISALPC` does it for you.
+- Serial IRQ must be in **continuous** mode. `ISALPC` sets it; the bridge does not work in quiet mode.
 - **ASRock X99M Killer 3.1 BIOS P4.01**: analysed in [docs/bios-x99m-killer-p4.01.md](docs/bios-x99m-killer-p4.01.md): three of the four
   generic decode windows are used, the chipset GPIO block sits at 500-57F (collides with WSS/Orpheus at 530/534), serial IRQ
   starts in quiet mode. An optional patcher ([tools/bios/patch_x99m.py](tools/bios/patch_x99m.py)) frees the unused windows

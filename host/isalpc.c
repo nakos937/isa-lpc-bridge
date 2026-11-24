@@ -110,7 +110,7 @@ static u32 gen[4], gen0[4];
 static u32 word_rd[3];                         /* firmware word_rd: first | last << 16 */
 static int nword;                     /* planned / as the BIOS left them */
 static u8 gen_kept[4];
-static int fix_steal, opt_keepsirq, opt_nopirq, opt_save, opt_forget;
+static int fix_steal, opt_nopirq, opt_save, opt_forget;
 static const u16 comr[8] = {0x3F8, 0x2F8, 0x220, 0x228, 0x238, 0x2E8, 0x338, 0x3E8};
 
 static int getbit(const u8 *m, u32 i) { return (m[i >> 3] >> (i & 7)) & 1; }
@@ -444,7 +444,7 @@ static void status(void) {
     printf("PCI devices use IRQ:");
     for (i = 3; i < 16; i++) if ((pciirq >> i) & 1) printf(" %d", i);
     printf("%s\n", pciirq ? " (not usable by ISA cards)" : " none");
-    if ((sirq & 0xC0) != 0xC0 && have_ports && !opt_dry && !opt_keepsirq) {   /* quiet mode needs the bridge to start each cycle */
+    if ((sirq & 0xC0) != 0xC0 && have_ports && !opt_dry) {   /* the bridge sends no start pulse: quiet mode would never poll it */
         pci_w8(0x64, (u8)(sirq | 0xC0));
         printf("SERIRQ was %s: set to continuous mode.\n", (sirq & 0x80) ? "in quiet mode" : "off");
     } else printf("SERIRQ %s.\n", !(sirq & 0x80) ? "off" : (sirq & 0x40) ? "on, continuous mode" : "on, quiet mode");
@@ -463,7 +463,6 @@ static void usage(void) {
     printf("isalpc [preset[=base] | lo-hi | irq=n,n ...] [force] [dry] [dma|nodma] [ldrq1]\n"
            "  no arguments: show the chipset and bridge state\n"
            "  force: replace decode ranges the BIOS set (as few as needed)    dry: change nothing\n"
-           "  keepsirq: leave the Serial IRQ mode alone (default: continuous)\n"
            "  nopirq: stop routing PCI interrupts (PIRQ A-H) to IRQs the bridge serves\n"
            "  save: keep the bridge settings in its flash, so it answers right after power-up (the PCH windows still need ISALPC at every boot)\n");
     printf("  forget: erase the saved bridge settings\n");
@@ -484,7 +483,6 @@ int main(int argc, char **argv) {
         else if (!strcmp(a, "dma")) opt_dma = 1;
         else if (!strcmp(a, "nodma")) opt_dma = 0;
         else if (!strcmp(a, "ldrq1")) opt_ldrq1 = 1;
-        else if (!strcmp(a, "keepsirq")) opt_keepsirq = 1;
         else if (!strcmp(a, "nopirq")) opt_nopirq = 1;
         else if (!strcmp(a, "save")) opt_save = 1;
         else if (!strcmp(a, "forget")) opt_forget = 1;

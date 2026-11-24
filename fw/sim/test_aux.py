@@ -96,8 +96,6 @@ def test_serirq(mask, rnd, start_clocks=4, other=0):
             got[k] = lvl
         sm.step(); t += CYC
     ok = True; why = []
-    if not sysm.pios[2].irq & 1:
-        ok = False; why.append("no IRQ 0 after the stop frame")
     for cy in range(2):
         for n in range(17):
             c = cy * clen + R + 2 + 3 * n

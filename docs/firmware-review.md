@@ -150,3 +150,10 @@ Not changed (author): -12 V is the ADP5071 output without post-filter; README LD
 Checked from the SDK 2.3.1 source: flash erase/program re-enters XIP through the bootrom's saved setup function, then
 `flash_timing_restore` reapplies the overclock divider; all code runs from RAM, so the build 12 assumption holds on paper.
 Not run on hardware: build 13.
+
+## Build 17 (2026-11-24): SERIRQ quiet mode removed
+Author decision. `isalpc` always sets continuous mode, and the PCH decodes are reset on every boot, so `isalpc` must run each boot
+anyway; the quiet-mode start pulse only served `keepsirq`, which had no known user. Removed: `serirq_kick` and its 50 us
+gate (`lpc.c`), the stop-frame `irq set 0` in the SERIRQ engine (AUX 29 of 32 instructions), the `keepsirq` option in `isalpc`.
+In quiet mode (BIOS default on the X99M) card IRQs now never reach the host. Simulator and `make -C host test` pass.
+`ISALPC.EXE` must be rebuilt (`make -B -C isa-lpc-bridge/host ISALPC.EXE`).

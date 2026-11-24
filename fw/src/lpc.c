@@ -38,7 +38,6 @@ static uint32_t drq_quiet_cyc;
 static inline uint32_t cyc(void) { return m33_hw->dwt_cyccnt; }
 static inline void drq_done(unsigned ch) { drq_pending &= ~(1u << ch); drq_quiet_from[ch] = cyc(); }
 static inline void drq_end(unsigned ch) { drq_done(ch); drq_claim &= ~(1u << ch); }   // after a withdraw the claim stays: a granted cycle may still come
-static uint sirq_start_pc;
 static uint off_fe_idle, off_tx0, off_ldrq0, off_sirq0;
 
 // ---- reply scripts: one TX FIFO word per LCLK ----
@@ -232,26 +231,12 @@ static void RAM_FUNC(send_ldrq)(unsigned ch, unsigned act) {
     dbg.st.ldrq_sent++;
 }
 
-// Quiet mode: the host only polls after a start pulse from a device. The SERIRQ engine waits for a low level; the CPU injects
-// a short low pulse through exec (about 4 LCLK, the host takes over and extends it) when the engine is idle and the bus is high.
-// Only when no cycle ended for SIRQ_QUIET_US: in continuous mode the host ignores the pulse but the engine would count frames from it.
-#define SIRQ_QUIET_US 50u
-static uint32_t sirq_seen_us;                   // last cycle end (engine raises PIO2 IRQ 0 after each stop pulse)
-static void RAM_FUNC(serirq_kick)(void) {
-    if (pio_sm_get_pc(PIO_AUX, SM_SIRQ) != sirq_start_pc) return;       // frames in progress
-    if (!gpio_get(PIN_SERIRQ)) return;                                   // somebody drives it low
-    pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_pindirs, 1));      // latch is 0: drives low
-    isa_ndelay(120);
-    pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_pindirs, 0));
-}
-
 static uint32_t irq_hold_until[17], irq_held;   // irq_held: frames inside their hold time (a bare deadline reads as pending after 2^31 us)
 
 void RAM_FUNC(lpc_service_irq)(void) {
     if (dbg.cfg.flags & F_NO_SERIRQ) return;
     uint32_t raw = isa_serirq_mask(isa_irq_stream());
     uint32_t now = time_us_32();
-    if (pio_interrupt_get(PIO_AUX, 0)) { pio_interrupt_clear(PIO_AUX, 0); sirq_seen_us = now; }
     uint32_t asserted = 0;
     for (unsigned f = 0; f < 17; f++) {
         if ((raw >> f) & 1u) { irq_hold_until[f] = now + dbg.cfg.irq_hold_us; irq_held |= 1u << f; }   // stretch short pulses so a SERIRQ cycle sees them
@@ -267,7 +252,6 @@ void RAM_FUNC(lpc_service_irq)(void) {
         pio_sm_put(PIO_AUX, SM_SIRQ, m);
         dbg.st.irq_changes++;
     }
-    if (!pio_sm_is_tx_fifo_empty(PIO_AUX, SM_SIRQ) && now - sirq_seen_us >= SIRQ_QUIET_US) serirq_kick();   // not taken, host quiet: send a start pulse
 }
 
 void RAM_FUNC(lpc_service_drq)(void) {
@@ -369,7 +353,6 @@ void lpc_init(void) {
     pio_sm_set_consecutive_pindirs(PIO_AUX, SM_SIRQ, PIN_SERIRQ, 1, false);
     off_sirq0 = off_s;
     pio_sm_init(PIO_AUX, SM_SIRQ, off_s, &c);
-    sirq_start_pc = off_s + serirq_offset_start;
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_pins, 0));
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_x, 0));
 
@@ -410,7 +393,6 @@ void lpc_reset(void) {
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_jmp(off_sirq0));
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_pins, 0));
     pio_sm_exec(PIO_AUX, SM_SIRQ, pio_encode_set(pio_x, 0));
-    pio_interrupt_clear(PIO_AUX, 0);
 
     drq_pending = 0;
     drq_claim = 0;

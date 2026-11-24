@@ -37,7 +37,7 @@ static void bios(unsigned gpiobase_) {                       // state after POST
 static int run(const char *args) {
     static char buf[200]; char *argv[20]; int argc = 1;
     memset(allow, 0, sizeof allow); memset(need, 0, sizeof need); irq_add = irq_set = 0;
-    have_irq_set = have_ports = opt_dry = opt_force = opt_ldrq1 = 0; opt_dma = 0; opt_gpio = gpio_from = 0; fix_steal = opt_keepsirq = opt_nopirq = opt_save = opt_forget = 0; pcmd = 0; pbusy = 0; nword = 0; memset(word_rd, 0, sizeof word_rd);
+    have_irq_set = have_ports = opt_dry = opt_force = opt_ldrq1 = 0; opt_dma = 0; opt_gpio = gpio_from = 0; fix_steal = opt_nopirq = opt_save = opt_forget = 0; pcmd = 0; pbusy = 0; nword = 0; memset(word_rd, 0, sizeof word_rd);
     strcpy(buf, args); argv[0] = "isalpc";
     for (char *t = strtok(buf, " "); t; t = strtok(NULL, " ")) argv[argc++] = t;
     printf("--- isalpc %s\n", args);
@@ -104,7 +104,7 @@ int main(void) {
 #define X99() do { bios(0x500); put16(0x82, 0x3C03); put32(0x40, 0x401); put32(0x84, 0x003C0281); put32(0x8C, 0x000C0CA3); put32(0x90, 0x001C0601); sim_pci[0x64] = 0x90; sim_io[0x502] = sim_io[0x682] = 0; } while (0)   /* LDRQ1# native */
     X99();
     assert(run("sb16") == 1 && run("sb16 dry force") == 0 && g32(0x88) == 0 && sim_pci[0x64] == 0x90);
-    assert(run("sb16 force keepsirq") == 0 && sim_pci[0x64] == 0x90);
+    assert(run("sb16 force") == 0 && sim_pci[0x64] == 0xD0);
     assert(g32(0x84) == 0x003C0281 && g32(0x8C) == 0x000C0CA3 && g32(0x90) != 0x001C0601);  // only GEN4 goes
     assert(fwd(0x22F) && fwd(0x330) && fwd(0x388) && fwd(0x295) && fwd(0x3F8) && fwd(0xCA2) && !fwd(0x600));
     X99();

@@ -19,7 +19,7 @@ bit:
 .wrap
 
 ; ---------------------------------------------------------------------------------------------
-; SERIRQ slave, continuous mode. OUT/SET pin = SERIRQ (GPIO46).
+; SERIRQ slave, continuous mode only (isalpc sets it; no start pulse of its own). OUT/SET pin = SERIRQ (GPIO46).
 ; Counts frames from the rising edge of the start pulse: IRQ0 sample phase is 2 clocks after it
 ; (Intel PCH data frame table, Fintek F85226 "clocks after start finished"). 17 frames: IRQ0..IRQ15, IOCHCK#.
 ; TX FIFO word = frame mask (bit n = 1: drive SERIRQ low in frame n: ISA IRQ line low, or IOCHCK# asserted); when the FIFO is empty
@@ -54,5 +54,4 @@ stop:
     wait 0 pin 5        ; middle of the next clock
     jmp pin stop        ; high again: a frame, not the stop pulse
     wait 1 pin 6
-    irq set 0           ; cycle seen: the CPU sends no start pulse while the host keeps polling
 .wrap

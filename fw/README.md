@@ -10,7 +10,7 @@ Status: builds clean, simulated, runs on the PASS_HG25 board.
   I/O: KBC, COM1, config ports, hardware monitor) are never driven.
 - `pio/lpc_tx.pio` (PIO1): script player. Waits for the claim with LAD released, then drives the wait-state SYNC (0110) until core 0 queues a script (one TX FIFO word per LCLK: nibble, direction, flag), then plays it: SYNC, data, TAR, second byte of
   16 bit DMA, sampling of the host's second byte (SAMPLE2), back to wait states (RESUME). Releases the bus on host abort.
-- `pio/lpc_aux.pio` (PIO2): LDRQ# messages and a SERIRQ slave that follows start/stop frames (works in both modes, see limits).
+- `pio/lpc_aux.pio` (PIO2): LDRQ# messages and a SERIRQ slave that follows start/stop frames (continuous mode, see limits).
 - `src/isa.c`: CPU driven ISA master. 595/165 chain: address changes bit-banged through the M33 GPIO coprocessor, the 5 us IRQ
   scan (16 bits of the 165s) on SPI0 in the background (mode 3, RCLK stays high; `F_CHAIN_GPIO` keeps it bit-banged too). Strobes and data through the
   coprocessor, IOCHRDY, DMA with DACK.
@@ -55,7 +55,7 @@ Only SWD is wired (J2), no BOOTSEL/USB. To avoid flashing:
 | Board function | Firmware |
 |---|---|
 | ISA 8 bit I/O read/write (SA0-15, IOR#/IOW#, IOCHRDY wait, 15 us timeout) | LPC I/O cycles, writes posted; port filter bitmap |
-| IRQ3-7, 9-12, 14, 15, IOCHCK# (165 chain) | SERIRQ frames 3-15 and 16 (IOCHCK#), pulse stretching (`irq_hold_us`, 30 us), quiet-mode start kick |
+| IRQ3-7, 9-12, 14, 15, IOCHCK# (165 chain) | SERIRQ frames 3-15 and 16 (IOCHCK#), pulse stretching (`irq_hold_us`, 30 us) |
 | DRQ0-3 (8 bit), DRQ5-7 (16 bit), DACK0-7, TC, AEN | LDRQ# messages, 8 and 16 bit DMA both directions, TC, "more" SYNC from the DRQ state, 8 LCLK rule |
 | RESETDRV = NAND(ISA_RUN, PCIRST#) | held until the chain is loaded; PCIRST# edges restart all PIO engines and forget DMA/IRQ state |
 | LPC clock, LAD, LFRAME#, LDRQ#, SERIRQ, PCIRST# | front end, script player, LDRQ#, SERIRQ, reset handling |
@@ -68,12 +68,11 @@ BALE control (held high), OSC (B30 = 14.318 MHz oscillator, not firmware control
 ## Known limits
 - LPC I/O cycles are 8 bit. DMA: 8 bit on channels 0-3, 16 bit on channels 5-7 (SBHE# low, SD0-15, DACK5-7). 32 bit transfers
   and channel 4 (bus master) are refused with SYNC error; the host does not use them unless the BIOS enables them.
-- SERIRQ: the engine counts frames from every start pulse, so it follows continuous and quiet mode. In quiet mode the host only
-  polls after a device pulse: when the IRQ state changes the CPU injects a ~120 ns low pulse through exec (src/lpc.c,
-  serirq_kick). Polarity per the X99 PCH datasheet: an IRQ frame is driven low while the ISA IRQ
+- SERIRQ: continuous mode only (`isalpc` sets it). The bridge sends no start pulse, so in quiet mode (BIOS default on the
+  X99M) card IRQs never reach the host. Polarity per the X99 PCH datasheet: an IRQ frame is driven low while the ISA IRQ
   line is low, released while it is high; IOCHCK# frame low = asserted. Only frames in `irq_frames` are served (default 3, 5,
   7, 9, 10, 11, 15, IOCHCK#): the Super I/O owns the rest (COM1 IRQ4, PS/2 mouse IRQ12).
-  PIO instruction memory: FE 32, TX 27, AUX 30 of 32, further LPC features need a redesign.
+  PIO instruction memory: FE 32, TX 27, AUX 29 of 32, further LPC features need a redesign.
 - No memory cycles, no bus master, no firmware hub cycles.
 - Wait-state SYNC is always 0110 (long, no host timeout in LPC 1.1 4.2.1.9).
 - 400 MHz default: working window 340..500 MHz in the simulator. Core 1 claim latency not measured on silicon (trace the SYNC
@@ -91,7 +90,7 @@ does both, on DOS (`ISALPC.EXE`, in AUTOEXEC.BAT before the sound drivers) and o
     isalpc list                 presets
 
 - PCH (D31:F0): GEN1-4 decode ranges with address masks, the fixed COMA/COMB/LPT/FDD/game decodes that are free, 4E/4F,
-  SERIRQ in continuous mode (`keepsirq` leaves it), optionally LDRQ1# instead of GPIO23 (`ldrq1`) and the DMA controller
+  SERIRQ in continuous mode, optionally LDRQ1# instead of GPIO23 (`ldrq1`) and the DMA controller
   reset (`dma`, default on DOS). Ranges the BIOS set are kept unless `force` is given; then as few as needed are replaced,
   GEN4 first, and a replaced range stays forwarded when one of the new ranges can cover it. The BIOS COM/LPT/floppy
   decodes are taken last. The tool prints what it replaced. `nopirq` also switches off the PCI interrupt routing (PIRQ A-H)
