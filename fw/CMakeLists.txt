@@ -41,6 +41,11 @@ if(NOT FW_VREG STREQUAL "")
     target_compile_definitions(isa_lpc PRIVATE FW_VREG=${FW_VREG})
 endif()
 
+option(FW_DEBUG "debug flags F_TRACE, F_NO_POST, F_STOP_LPC (ignored otherwise)" OFF)
+if(FW_DEBUG)
+    target_compile_definitions(isa_lpc PRIVATE FW_DEBUG=1)
+endif()
+
 option(FW_RAM "build for RAM only (load with the debugger, no flash writes)" OFF)
 if(FW_RAM)
     pico_set_binary_type(isa_lpc no_flash)

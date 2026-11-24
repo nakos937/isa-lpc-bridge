@@ -10,15 +10,14 @@
 #define FW_DBG_ADDR 0x2007C000u
 
 enum {
-    F_TRACE        = 1u << 0,           // log every LPC cycle into the trace ring
+    F_TRACE        = 1u << 0,           // log every LPC cycle into the trace ring (FW_DEBUG builds only)
     F_DMA          = 1u << 1,           // serve DMA channels 0-3 (8 bit) and 5-7 (16 bit) via LDRQ#
     F_NO_SERIRQ    = 1u << 2,           // do not feed IRQ states to SERIRQ
     F_HOLD_RESET   = 1u << 3,           // keep ISA RESETDRV asserted
-    F_NO_POST      = 1u << 4,           // I/O writes are acknowledged after the ISA cycle (default: before, posted); the low byte of a
+    F_NO_POST      = 1u << 4,           // I/O writes are acknowledged after the ISA cycle (default: before, posted; FW_DEBUG builds only); the low byte of a
                                         // word to an IOCS16# port is still acknowledged when held, its word cycle runs with the high byte
-    F_STOP_LPC     = 1u << 6,           // ignore LPC words (debug)
+    F_STOP_LPC     = 1u << 6,           // ignore LPC words (FW_DEBUG builds only)
     F_FAST_EDGES   = 1u << 7,           // SCK fast slew + 8 mA, IOR#/IOW# 8 mA (default: slow slew, 4 mA)
-    F_CHAIN_GPIO   = 1u << 8,           // 595/165 chain bit-banged by the CPU instead of SPI0 (needs a reboot)
     F_NO_CFGPORT   = 1u << 9,           // ports 4E/4F go to the ISA slot instead of the config port (cfgport.c)
 };
 

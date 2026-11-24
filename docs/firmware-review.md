@@ -157,3 +157,9 @@ anyway; the quiet-mode start pulse only served `keepsirq`, which had no known us
 gate (`lpc.c`), the stop-frame `irq set 0` in the SERIRQ engine (AUX 29 of 32 instructions), the `keepsirq` option in `isalpc`.
 In quiet mode (BIOS default on the X99M) card IRQs now never reach the host. Simulator and `make -C host test` pass.
 `ISALPC.EXE` must be rebuilt (`make -B -C isa-lpc-bridge/host ISALPC.EXE`).
+
+## Build 18 (2026-11-24): SPI chain only, debug flags behind FW_DEBUG
+Author decision. `F_CHAIN_GPIO` removed: the IRQ scan always runs on SPI0 (works on HG25); `isa_chain_raw` stays for the
+mailbox and the first load. `F_TRACE`, `F_NO_POST` and `F_STOP_LPC` act only in a build with `FW_DEBUG=ON tools/build.sh [ram]`;
+otherwise the bits are ignored, writes are always posted and the trace ring stays empty. `fw_dbg_t` layout unchanged (config
+port and saved-config offsets). Flash image 28328 bytes, debug build 28812. Simulator, `fw/test` and `make -C host test` pass.

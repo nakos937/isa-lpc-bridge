@@ -44,7 +44,7 @@ static inline void nops(uint32_t n) { while (n--) __asm volatile("nop"); }
 // the address while their shift registers take garbage; an address change shifts all 24 bits in anyway and abandons a
 // running scan (the next one is 5 us away). SCK idles high in both modes, so switching the pin function makes no edge.
 #define CHAIN_SPI_HZ 25000000u                   // clk_peri is 48 MHz (USB PLL after set_sys_clock): runs at 24 MHz
-static bool chain_spi, chain_busy, pins_on_spi, scan_void, scan_skip;
+static bool chain_busy, pins_on_spi, scan_void, scan_skip;
 static const uint scan_pins[] = {PIN_CH_MISO, PIN_CH_SCK};
 
 static void RAM_FUNC(chain_pins_func)(bool spi) {
@@ -106,7 +106,7 @@ static void RAM_FUNC(sense_cs16)(void) {                    // U8.H = IOCS16#: Q
     gpioc_lo_out_set(M(PIN_CH_SHLD));
 }
 
-uint32_t RAM_FUNC(isa_chain_raw)(uint32_t w) {              // full shift with IRQ readout: mailbox, F_CHAIN_GPIO
+uint32_t RAM_FUNC(isa_chain_raw)(uint32_t w) {              // full shift with IRQ readout: mailbox, first load
     if (chain_busy) spi_collect();
     if (pins_on_spi) chain_pins_func(false);
     const uint32_t n = dbg.cfg.chain_nops;
@@ -142,7 +142,6 @@ bool RAM_FUNC(isa_iocs16w)(uint16_t a) { bus_idle(); set_word(a); return cs16; }
 void isa_addr_forget(void) { cur_word = 0xFFFFFFFFu; }       // host reset: the cards' decode may change
 
 void RAM_FUNC(isa_chain_refresh)(void) {
-    if (!chain_spi) { isa_chain_raw(cur_word); return; }
     if (chain_busy) spi_collect();
     spi_kick();                                               // collected by the next isa_irq_stream()
 }
@@ -374,13 +373,10 @@ void isa_init(void) {
     out_pin(PIN_CH_RCLK, true);
     out_pin(PIN_CH_MOSI, false);
     out_pin(PIN_CH_SHLD, true);
-    chain_spi = !(dbg.cfg.flags & F_CHAIN_GPIO);
-    if (chain_spi) {
-        spi_init(spi0, CHAIN_SPI_HZ);
-        spi_set_format(spi0, 8, SPI_CPOL_1, SPI_CPHA_1, SPI_MSB_FIRST);
-        for (unsigned i = 0; i < 2; i++) gpio_set_function(scan_pins[i], GPIO_FUNC_SPI);
-        pins_on_spi = true;
-    }
+    spi_init(spi0, CHAIN_SPI_HZ);
+    spi_set_format(spi0, 8, SPI_CPOL_1, SPI_CPHA_1, SPI_MSB_FIRST);
+    for (unsigned i = 0; i < 2; i++) gpio_set_function(scan_pins[i], GPIO_FUNC_SPI);
+    pins_on_spi = true;
     if (dbg.cfg.flags & F_FAST_EDGES) {
         gpio_set_slew_rate(PIN_CH_SCK, GPIO_SLEW_RATE_FAST);
         gpio_set_drive_strength(PIN_CH_SCK, GPIO_DRIVE_STRENGTH_8MA);

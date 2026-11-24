@@ -12,7 +12,7 @@ Status: builds clean, simulated, runs on the PASS_HG25 board.
   16 bit DMA, sampling of the host's second byte (SAMPLE2), back to wait states (RESUME). Releases the bus on host abort.
 - `pio/lpc_aux.pio` (PIO2): LDRQ# messages and a SERIRQ slave that follows start/stop frames (continuous mode, see limits).
 - `src/isa.c`: CPU driven ISA master. 595/165 chain: address changes bit-banged through the M33 GPIO coprocessor, the 5 us IRQ
-  scan (16 bits of the 165s) on SPI0 in the background (mode 3, RCLK stays high; `F_CHAIN_GPIO` keeps it bit-banged too). Strobes and data through the
+  scan (16 bits of the 165s) on SPI0 in the background (mode 3, RCLK stays high). Strobes and data through the
   coprocessor, IOCHRDY, DMA with DACK.
 - `src/io16.c`: 16 bit I/O on ports that answer IOCS16# (sensed through the 165 chain after each address change, HG25): the PCH's
   two byte cycles to a port pair become one 16 bit ISA cycle (SBHE# low); a lone byte uses the AT byte lane. Writes pair on
@@ -47,7 +47,8 @@ the Raspberry Pi forum thread 375975 and the code gist it links.
 Only SWD is wired (J2), no BOOTSEL/USB. To avoid flashing:
 - `tools/ram.sh` loads the RAM build over SWD and runs it. Nothing is written to flash; edit, rebuild, reload in seconds.
 - Everything tunable lives in a RAM block at 0x2007C000 (`src/cfg.h`): ISA strobe timing, IOCHRDY timeout, chain speed,
-  port filter bitmap, feature flags, counters, a trace ring, and a command mailbox. Change with openocd `mww`, or
+  port filter bitmap, feature flags, counters, a trace ring, and a command mailbox. `F_TRACE`, `F_NO_POST` and `F_STOP_LPC`
+  work only in a debug build: `FW_DEBUG=ON tools/build.sh [ram]`. Change with openocd `mww`, or
   `source tools/isa.tcl` for `isa_inb 0x220`, `isa_outb`, `isa_irq`, `isa_drq`, `fw_set t_cmd_ns 800`, `fw_stats`.
 - Run ISA cycles from the probe (mailbox) to test wiring and cards before any LPC host is connected.
 

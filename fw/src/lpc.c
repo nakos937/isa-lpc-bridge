@@ -81,12 +81,18 @@ static inline void s_dmar16_a(void) {                        // SYNC more, TAR, 
 
 static inline bool denied(uint16_t a) { return (dbg.cfg.deny[a >> 3] >> (a & 7)) & 1u; }
 
+#ifdef FW_DEBUG
+#define DEBUG_FLAGS (F_TRACE | F_NO_POST | F_STOP_LPC)
 static void RAM_FUNC(trace)(uint32_t type, uint32_t addr, uint32_t data) {
     if (!(dbg.cfg.flags & F_TRACE)) return;
     uint32_t h = dbg.trace_head++ % TRACE_N;
     dbg.trace[h].ts = time_us_32();
     dbg.trace[h].info = (type << 28) | ((addr & 0xFFFFu) << 8) | (data & 0xFFu);
 }
+#else
+#define DEBUG_FLAGS 0u
+#define trace(type, addr, data) ((void)0)
+#endif
 
 static bool RAM_FUNC(rx_byte)(uint8_t *b) {                  // byte sampled by the player (SAMPLE2), up to 50 us
     for (int i = 0; i < 2000; i++) {
@@ -112,9 +118,10 @@ static void RAM_FUNC(serve)(uint32_t w) {
         uint8_t d = (uint8_t)(((w & 0xFu) << 4) | ((w >> 4) & 0xFu));
         dbg.st.iow++; dbg.st.last_addr = a; dbg.st.last_data = d; dbg.st.last_type = 2;
         if ((a & ~1u) == CFGPORT && !(dbg.cfg.flags & F_NO_CFGPORT)) { s_ack(SYNC_READY); cfgport_write(a, d); return; }
-        if (!(dbg.cfg.flags & F_NO_POST)) s_ack(SYNC_READY);
+        const bool post = !(dbg.cfg.flags & DEBUG_FLAGS & F_NO_POST);
+        if (post) s_ack(SYNC_READY);
         io16_write(a, d, time_us_32());
-        if (dbg.cfg.flags & F_NO_POST) s_ack(SYNC_READY);
+        if (!post) s_ack(SYNC_READY);
         trace(2, a, d);
         return;
     }
@@ -197,7 +204,7 @@ static void __scratch_x("core1") core1_claim(void) {       // scratch X: own SRA
         const uint32_t claim = W(SYNC_LONG, LD, F_RESUME);
         const uint32_t flags = dbg.cfg.flags;
         const uint32_t h = ring_head;
-        const bool open = h - ring_tail < RING_N && !(flags & F_STOP_LPC);
+        const bool open = h - ring_tail < RING_N && !(flags & DEBUG_FLAGS & F_STOP_LPC);
         while (fe_empty()) {}
         uint32_t w = PIO_FE->rxf[SM_FE];
         if (open && ours(w, flags)) {

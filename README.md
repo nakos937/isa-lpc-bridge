@@ -185,8 +185,8 @@ DMA (digitised sound in DOS games, SB/GUS sample playback) will not.
 8. Support the board before inserting the card (see [Mounting](#mounting-it-in-a-case)).
 
 ## Firmware
-Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja). Pre-built images of build 17:
-[`fw/prebuilt/`](fw/prebuilt/) (`isa_lpc_flash_build17.elf`, `isa_lpc_ram_build17.elf`).
+Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja). Pre-built images of build 18:
+[`fw/prebuilt/`](fw/prebuilt/) (`isa_lpc_flash_build18.elf`, `isa_lpc_ram_build18.elf`).
 
 - **Architecture:** three PIO blocks implement the LPC target (front end, reply script player, LDRQ#/SERIRQ engines);
   core 1 claims LPC cycles within the 3-clock SYNC deadline; core 0 runs the ISA bus (address through the shift
