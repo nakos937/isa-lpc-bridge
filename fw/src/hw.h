@@ -24,7 +24,7 @@
 #define PIN_PCIRST_N    15      // input, host PCI reset, mirrors the reset input of the NAND
 // --- ISA data bus SD0..SD15 through the transceivers ---
 #define PIN_SD0         16      // GPIO16..31
-// --- DMA requests, active high, external 4.7k pull-downs (RP2350-E9: never rely on the internal pull-down) ---
+// --- DMA requests, active high, external 4.7k pull-downs ---
 #define PIN_DRQ0        32
 #define PIN_DRQ1        33
 #define PIN_DRQ2        34
