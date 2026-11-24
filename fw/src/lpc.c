@@ -38,7 +38,6 @@ static uint32_t drq_quiet_cyc;
 static inline uint32_t cyc(void) { return m33_hw->dwt_cyccnt; }
 static inline void drq_done(unsigned ch) { drq_pending &= ~(1u << ch); drq_quiet_from[ch] = cyc(); }
 static inline void drq_end(unsigned ch) { drq_done(ch); drq_claim &= ~(1u << ch); }   // after a withdraw the claim stays: a granted cycle may still come
-static volatile uint32_t wait_nib = 6;                   // wait-state SYNC; also the SAMPLE2 flag value in scripts
 static uint sirq_start_pc;
 static uint off_fe_idle, off_tx0, off_ldrq0, off_sirq0;
 
@@ -49,6 +48,7 @@ static uint off_fe_idle, off_tx0, off_ldrq0, off_sirq0;
 #define SYNC_READY 0x0u
 #define SYNC_MORE  0x9u
 #define SYNC_ERROR 0xAu
+#define SYNC_LONG  0x6u
 #define NX       lpc_tx_offset_pullp            // flag = next address in the player (out pc, program at offset 0)
 #define F_END    lpc_tx_offset_start
 #define F_RESUME lpc_tx_offset_wloop
@@ -77,7 +77,7 @@ static inline void s_dmaw16(uint32_t sync2, uint16_t d) {    // SYNC more, byte 
 }
 static inline void s_dmar16_a(void) {                        // SYNC more, TAR, host byte 1 (SAMPLE2), host TAR, wait states
     put(W(SYNC_MORE, LD, NX)); put(W(0xF, LD, NX)); put(W(0, LR, NX)); put(W(0, LR, F_SAMP));
-    put(W(0, LR, NX)); put(W(0, LR, NX)); put(W(wait_nib, LD, F_RESUME));
+    put(W(0, LR, NX)); put(W(0, LR, NX)); put(W(SYNC_LONG, LD, F_RESUME));
 }
 
 static inline bool denied(uint16_t a) { return (dbg.cfg.deny[a >> 3] >> (a & 7)) & 1u; }
@@ -195,7 +195,7 @@ static inline bool ours(uint32_t w, uint32_t flags) {
 // does not depend on the word is read before waiting for it.
 static void __scratch_x("core1") core1_claim(void) {       // scratch X: own SRAM bank, core 1 stack sits there too
     for (;;) {
-        const uint32_t claim = W(wait_nib, LD, F_RESUME);
+        const uint32_t claim = W(SYNC_LONG, LD, F_RESUME);
         const uint32_t flags = dbg.cfg.flags;
         const uint32_t h = ring_head;
         const bool open = h - ring_tail < RING_N && !(flags & F_STOP_LPC);
@@ -293,11 +293,6 @@ void RAM_FUNC(lpc_service_drq)(void) {
     }
 }
 
-void lpc_set_sync(int long_wait) {
-    wait_nib = long_wait ? 6u : 5u;
-    pio_sm_exec(PIO_TX, SM_TX, pio_encode_set(pio_y, wait_nib));
-}
-
 // ---------------------------------------------------------------------------------------------
 void lpc_init(void) {
     drq_quiet_cyc = clock_get_hz(clk_sys) / 2500000u;               // 400 ns: 8 LCLK plus the TAR still queued in the player
@@ -348,7 +343,6 @@ void lpc_init(void) {
     pio_sm_set_consecutive_pindirs(PIO_TX, SM_TX, PIN_LAD0, 4, false);
     off_tx0 = off_tx;
     pio_sm_init(PIO_TX, SM_TX, off_tx, &c);
-    lpc_set_sync(!(dbg.cfg.flags & F_SYNC_SHORT));
 
     // ---- LDRQ# ----
     int off_l = pio_add_program(PIO_AUX, &ldrq_program);
@@ -403,7 +397,6 @@ void lpc_reset(void) {
     pio_sm_clear_fifos(PIO_TX, SM_TX); pio_sm_restart(PIO_TX, SM_TX);
     pio_sm_set_consecutive_pindirs(PIO_TX, SM_TX, PIN_LAD0, 4, false);   // release LAD
     pio_sm_exec(PIO_TX, SM_TX, pio_encode_jmp(off_tx0));
-    lpc_set_sync(wait_nib == 6u);
     pio_interrupt_clear(PIO_TX, 0);
     pio_interrupt_clear(PIO_TX, 1);
 

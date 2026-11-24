@@ -8,8 +8,7 @@ Status: builds clean, simulated, runs on the PASS_HG25 board.
 - Core 1 (`core1_claim` in `src/lpc.c`): reads every front end word and claims ours (port not in `deny[]`, DMA channel we
   requested) by queueing a wait-state SYNC word within 3 LCLK; passes claimed words to core 0. Other cycles (the board's Super
   I/O: KBC, COM1, config ports, hardware monitor) are never driven.
-- `pio/lpc_tx.pio` (PIO1): script player. Waits for the claim with LAD released, then drives the wait-state SYNC (0110 by
-  default) until core 0 queues a script (one TX FIFO word per LCLK: nibble, direction, flag), then plays it: SYNC, data, TAR, second byte of
+- `pio/lpc_tx.pio` (PIO1): script player. Waits for the claim with LAD released, then drives the wait-state SYNC (0110) until core 0 queues a script (one TX FIFO word per LCLK: nibble, direction, flag), then plays it: SYNC, data, TAR, second byte of
   16 bit DMA, sampling of the host's second byte (SAMPLE2), back to wait states (RESUME). Releases the bus on host abort.
 - `pio/lpc_aux.pio` (PIO2): LDRQ# messages and a SERIRQ slave that follows start/stop frames (works in both modes, see limits).
 - `src/isa.c`: CPU driven ISA master. 595/165 chain: address changes bit-banged through the M33 GPIO coprocessor, the 5 us IRQ
@@ -76,8 +75,7 @@ BALE control (held high), OSC (B30 = 14.318 MHz oscillator, not firmware control
   7, 9, 10, 11, 15, IOCHCK#): the Super I/O owns the rest (COM1 IRQ4, PS/2 mouse IRQ12).
   PIO instruction memory: FE 32, TX 27, AUX 30 of 32, further LPC features need a redesign.
 - No memory cycles, no bus master, no firmware hub cycles.
-- Wait-state SYNC is 0110 (long). Some hosts abort after 8 clocks of 0101; AMD AM4 behaviour is the open question
-  (docs/review-30rounds.md rounds 4-5). `F_SYNC_SHORT` selects 0101.
+- Wait-state SYNC is always 0110 (long, no host timeout in LPC 1.1 4.2.1.9).
 - 400 MHz default: working window 340..500 MHz in the simulator. Core 1 claim latency not measured on silicon (trace the SYNC
   start clock with a logic analyser).
 - RP2350-E9: DRQ lines rely on the external 4.7k pull-downs, the firmware never enables internal pull-downs.

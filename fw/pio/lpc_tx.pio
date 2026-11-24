@@ -3,9 +3,9 @@
 ;
 ; lpc_fe raises IRQ 0 after the last host nibble it sampled (clock N). Host cycle: ... TAR1 (clock N+1, host drives 1111),
 ; TAR2 (clock N+2, bus floats), SYNC from clock N+3. This engine skips the TAR2 edge and waits with LAD released. Core 1 claims
-; a cycle by queueing W(Y, drive, RESUME): SYNC starts at N+3..N+5 (claim seen at the falling edge of N+2..N+4), within the
+; a cycle by queueing W(0110, drive, RESUME): SYNC starts at N+3..N+5 (claim seen at the falling edge of N+2..N+4), within the
 ; 3 clock limit of LPC 1.1 4.2.1.9; then the
-; wait-state SYNC (Y = 0110 or 0101) is driven every clock until core 0 queues the script. Unclaimed cycles are never driven:
+; wait-state SYNC 0110 is driven every clock until core 0 queues the script. Unclaimed cycles are never driven:
 ; the next START (LFRAME# low) sends the engine back to idle.
 ;
 ; Script = one TX FIFO word per LCLK (a SAMPLE2 word takes two), played from the first rising edge after the FIFO became non-empty:

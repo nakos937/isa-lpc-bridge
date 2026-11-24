@@ -16,7 +16,6 @@ enum {
     F_HOLD_RESET   = 1u << 3,           // keep ISA RESETDRV asserted
     F_NO_POST      = 1u << 4,           // I/O writes are acknowledged after the ISA cycle (default: before, posted); the low byte of a
                                         // word to an IOCS16# port is still acknowledged when held, its word cycle runs with the high byte
-    F_SYNC_SHORT   = 1u << 5,           // wait-state SYNC 0101 instead of 0110 (needs a reboot or CMD_SYNC)
     F_STOP_LPC     = 1u << 6,           // ignore LPC words (debug)
     F_FAST_EDGES   = 1u << 7,           // SCK fast slew + 8 mA, IOR#/IOW# 8 mA (default: slow slew, 4 mA)
     F_CHAIN_GPIO   = 1u << 8,           // 595/165 chain bit-banged by the CPU instead of SPI0 (needs a reboot)
@@ -64,13 +63,13 @@ typedef struct {
 } fw_stats_t;
 
 typedef struct {
-    volatile uint32_t cmd;              // write last: 1 IOR, 2 IOW, 3 chain word, 4 IRQ scan, 5 DRQ, 6 reset pulse, 7 set sync
+    volatile uint32_t cmd;              // write last: 1 IOR, 2 IOW, 3 chain word, 4 IRQ scan, 5 DRQ, 6 reset pulse
     volatile uint32_t a0, a1;
     volatile uint32_t r0, r1;
     volatile uint32_t seq;              // incremented when the command finished (cmd is cleared at the same time)
 } fw_mbox_t;
 
-enum { CMD_NONE = 0, CMD_IOR = 1, CMD_IOW = 2, CMD_CHAIN = 3, CMD_IRQ = 4, CMD_DRQ = 5, CMD_RESET = 6, CMD_SYNC = 7 };
+enum { CMD_NONE = 0, CMD_IOR = 1, CMD_IOW = 2, CMD_CHAIN = 3, CMD_IRQ = 4, CMD_DRQ = 5, CMD_RESET = 6 };
 
 typedef struct { uint32_t ts; uint32_t info; } fw_trace_t;   // info = type<<28 | addr<<8... see lpc.c
 

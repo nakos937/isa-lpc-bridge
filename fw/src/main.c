@@ -40,7 +40,7 @@
   #endif
 #endif
 #define FLASH_MAX_KHZ 66000          // in-package W25Q16JV, kept well below its 133 MHz limit
-#define BUILD 15
+#define BUILD 16
 
 // fixed RAM address, outside the linker's view (image is far below 0x2007C000, stacks sit at 0x20080000): survives a reload
 extern void mailbox_poll(void);

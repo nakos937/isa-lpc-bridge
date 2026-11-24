@@ -33,7 +33,6 @@ void mailbox_poll(void) {
     case CMD_CHAIN: dbg.mbox.r0 = isa_chain_raw(dbg.mbox.a0 & 0xFFFFFFu); break;
     case CMD_IRQ:   isa_chain_refresh(); dbg.mbox.r0 = isa_irq_stream(); break;   // waits for this scan
     case CMD_DRQ:   dbg.mbox.r0 = isa_drq(); break;
-    case CMD_SYNC:  lpc_set_sync((int)dbg.mbox.a0); break;
     default: dbg.mbox.r0 = 0xDEADBEEFu; break;
     }
     dbg.mbox.cmd = 0;
