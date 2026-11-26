@@ -67,8 +67,9 @@ SMEMW# have pull-ups only), LA17-23, bus mastering (MASTER# only pulled up), MEM
 BALE control (held high), OSC (B30 = 14.318 MHz oscillator, not firmware controlled), BCLK (fixed OSC/2 = 7.16 MHz), CLKRUN#, LPCPD#.
 
 ## Known limits
-- LPC I/O cycles are 8 bit. DMA: 8 bit on channels 0-3, 16 bit on channels 5-7 (SBHE# low, SD0-15, DACK5-7). 32 bit transfers
-  and channel 4 (bus master) are refused with SYNC error; the host does not use them unless the BIOS enables them.
+- LPC I/O cycles are 8 bit. DMA: 8 bit on channels 0-3, 16 bit on channels 5-7 (SBHE# low, SD0-15, DACK5-7). A wider transfer
+  (only when the BIOS enables it) moves one byte or word and ends with SYNC ready, so the host asks again. The bridge never sends
+  SYNC error: the PCH reports it as SERR (X99 PCH datasheet 5.5.1.7).
 - SERIRQ: continuous mode only (`isalpc` sets it). The bridge sends no start pulse, so in quiet mode (BIOS default on the
   X99M) card IRQs never reach the host. Polarity per the X99 PCH datasheet: an IRQ frame is driven low while the ISA IRQ
   line is low, released while it is high; IOCHCK# frame low = asserted. Only frames in `irq_frames` are served (default 3, 5,

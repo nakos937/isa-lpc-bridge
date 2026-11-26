@@ -136,45 +136,45 @@ static void RAM_FUNC(serve)(uint32_t w) {
         trace(1, a, d);
     } else if (t == 8) {                                     // DMA read (host -> card): [15:12] ch|TC<<3 [11:8] size [7:4] lo [3:0] hi
         unsigned ch = (w >> 12) & 7u; bool tc = (w >> 15) & 1u;
-        uint32_t size = (w >> 8) & 0xFu;
+        uint32_t size = (w >> 8) & 3u;                       // SIZE bits 3:2 are reserved (LPC 1.1 table 14)
         uint8_t b0 = (uint8_t)(((w >> 4) & 0xFu) | ((w & 0xFu) << 4));
-        if (!(dbg.cfg.flags & F_DMA) || ch == 4) { s_ack(SYNC_ERROR); return; }
-        if (size == 0 && ch <= 3) {
-            isa_dma_write(ch, tc, b0);
-            bool m = more(ch); if (!m) drq_end(ch);
+        if (!(dbg.cfg.flags & F_DMA) || ch == 4) { drq_end(ch); s_ack(SYNC_READY); return; }   // error SYNC is a SERR at the PCH (x99pch 5.5.1.7)
+        if (ch <= 3) {                                       // a wider SIZE on an 8 bit channel: one byte, then READY ends it (LPC 1.1 6.4.3)
+            isa_dma_write(ch, tc && size == 0, b0);
+            bool m = size == 0 && more(ch); if (!m) drq_end(ch);
             s_ack(m ? SYNC_MORE : SYNC_READY);
             dbg.st.dma_r++; dbg.st.last_addr = ch; dbg.st.last_data = b0; dbg.st.last_type = 8;
             trace(8, ch, b0);
-        } else if (size == 1 && ch >= 5) {
+        } else if (size != 0) {                              // 32 bit on a 16 bit channel: one word, then READY
             s_dmar16_a();                                    // acknowledge byte 0, the player samples byte 1
             uint8_t b1;
-            if (!rx_byte(&b1)) { dbg.st.rdy_timeouts++; s_ack(SYNC_ERROR); return; }
-            isa_dma16_write(ch, tc, (uint16_t)(b0 | ((uint16_t)b1 << 8)));
-            bool m = more(ch); if (!m) drq_end(ch);
+            if (!rx_byte(&b1)) { dbg.st.rdy_timeouts++; drq_end(ch); s_ack(SYNC_READY); return; }
+            isa_dma16_write(ch, tc && size == 1, (uint16_t)(b0 | ((uint16_t)b1 << 8)));
+            bool m = size == 1 && more(ch); if (!m) drq_end(ch);
             s_ack(m ? SYNC_MORE : SYNC_READY);
             dbg.st.dma_r++; dbg.st.last_addr = ch; dbg.st.last_data = b0 | (b1 << 8); dbg.st.last_type = 8;
             trace(8, ch, b0);
         } else {
-            s_ack(SYNC_ERROR);
+            drq_end(ch); s_ack(SYNC_READY);
         }
     } else if (t == 0xFu && ((w >> 8) & 0xFu) == 0xAu) {     // DMA write (card -> host): [7:4] ch|TC<<3 [3:0] size
         unsigned ch = (w >> 4) & 7u; bool tc = (w >> 7) & 1u;
-        uint32_t size = w & 0xFu;
-        if (!(dbg.cfg.flags & F_DMA) || ch == 4) { s_data8(SYNC_ERROR, 0xFF); return; }
-        if (size == 0 && ch <= 3) {
-            uint8_t d = isa_dma_read(ch, tc);
-            bool m = more(ch); if (!m) drq_end(ch);
+        uint32_t size = w & 3u;
+        if (!(dbg.cfg.flags & F_DMA) || ch == 4) { drq_end(ch); s_data8(SYNC_READY, 0xFF); return; }
+        if (ch <= 3) {
+            uint8_t d = isa_dma_read(ch, tc && size == 0);
+            bool m = size == 0 && more(ch); if (!m) drq_end(ch);
             s_data8(m ? SYNC_MORE : SYNC_READY, d);
             dbg.st.dma_w++; dbg.st.last_addr = ch; dbg.st.last_data = d; dbg.st.last_type = 10;
             trace(10, ch, d);
-        } else if (size == 1 && ch >= 5) {
-            uint16_t d = isa_dma16_read(ch, tc);
-            bool m = more(ch); if (!m) drq_end(ch);
+        } else if (size != 0) {
+            uint16_t d = isa_dma16_read(ch, tc && size == 1);
+            bool m = size == 1 && more(ch); if (!m) drq_end(ch);
             s_dmaw16(m ? SYNC_MORE : SYNC_READY, d);
             dbg.st.dma_w++; dbg.st.last_addr = ch; dbg.st.last_data = d; dbg.st.last_type = 10;
             trace(10, ch, d & 0xFF);
         } else {
-            s_data8(SYNC_ERROR, 0xFF);
+            drq_end(ch); s_data8(SYNC_READY, 0xFF);
         }
     } else {
         s_ack(SYNC_ERROR);
