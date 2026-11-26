@@ -197,7 +197,7 @@ Source in [`fw/`](fw/) (pico-sdk 2.1 or newer, `arm-none-eabi-gcc`, cmake, ninja
 - **Config port:** the bridge answers on I/O ports **4E/4F** (like the Fintek chip); `ISALPC` uses it. Index 'I','S','A' unlocks
   it. It can be turned off with a flag.
 - **Saved config:** `ISALPC ... SAVE` keeps the bridge settings (port filter, IRQ list, timing) in the MCU flash, so the bridge
-  answers correctly right after power-up. `ISALPC FORGET` erases them. A save pauses the bridge for up to a second. Settings
+  answers correctly right after power-up. `ISALPC FORGET` erases them. A save pauses the bridge for up to 1.3 s. Settings
   that could lock the host out are never restored from flash.
 - **Tests without hardware:** `python3 fw/sim/test_lpc.py`, `python3 fw/sim/test_aux.py` (cycle simulator of the PIO programs),
   `cc -Ifw/src -o /tmp/t fw/test/io16_test.c && /tmp/t`, same for `cfgport_test.c`.
