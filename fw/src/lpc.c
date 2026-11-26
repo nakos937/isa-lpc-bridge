@@ -284,6 +284,11 @@ void RAM_FUNC(lpc_service_drq)(void) {
     }
 }
 
+static void fe_set_y(void) {                                     // Y = 0xFFFFFFF0: the START 0000 pattern lpc_fe compares against
+    pio_sm_exec(PIO_FE, SM_FE, pio_encode_set(pio_y, 15));
+    pio_sm_exec(PIO_FE, SM_FE, pio_encode_mov_not(pio_y, pio_y));
+}
+
 // ---------------------------------------------------------------------------------------------
 void lpc_init(void) {
     drq_quiet_cyc = clock_get_hz(clk_sys) / 2500000u;               // 400 ns: 8 LCLK plus the TAR still queued in the player
@@ -315,10 +320,10 @@ void lpc_init(void) {
     sm_config_set_in_pin_base(&c, PIN_LAD0);
     sm_config_set_jmp_pin(&c, PIN_LFRAME_N);
     sm_config_set_in_shift(&c, false, false, 32);          // ISR shifts left, no autopush
-    sm_config_set_out_shift(&c, true, false, 32);
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
     off_fe_idle = off_fe + lpc_fe_offset_idle;
     pio_sm_init(PIO_FE, SM_FE, off_fe_idle, &c);
+    fe_set_y();
 
     // ---- script player: ISR right shift with autopush at 8 bits (sampled byte = word >> 24) ----
     int off_tx = pio_add_program_at_offset(PIO_TX, &lpc_tx_program, 0);   // flags are absolute addresses
@@ -382,6 +387,7 @@ void lpc_reset(void) {
 
     pio_sm_clear_fifos(PIO_FE, SM_FE); pio_sm_restart(PIO_FE, SM_FE);
     pio_sm_exec(PIO_FE, SM_FE, pio_encode_jmp(off_fe_idle));
+    fe_set_y();
     busy_wait_us_32(2);                       // core 1 finishes a word it already took (well under 1 us), then idles on the empty FIFO
 
     pio_sm_clear_fifos(PIO_TX, SM_TX); pio_sm_restart(PIO_TX, SM_TX);

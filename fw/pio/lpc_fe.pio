@@ -13,14 +13,16 @@
 ; Reads / DMA read / DMA write: the response starts 3 rising edges after the last sampled clock; lpc_tx does it.
 ;
 ; Only START 0000 is taken, sampled in the last LFRAME# clock (LPC 1.1 4.2.1.1): TPM (0101), firmware hub, bus master and abort
-; cycles are skipped. The dispatch table sits in slots 16..31 (mov pc, isr: ISR[4:0] = 1 + CYCTYPE nibble): this program MUST
-; be loaded at offset 0.
+; cycles are skipped. Y holds 0xFFFFFFF0 (set by the CPU, never written here): X = START candidate, X != Y means not ours.
+; The dispatch table sits in slots 16..31 (mov pc, isr: ISR[4:0] = 1 + CYCTYPE nibble): this program MUST be loaded at offset 0.
+; CYCTYPE bit 0 is reserved (LPC 1.1 table 14): an odd nibble runs only the jmp of a pair, X = 1 collects 2 nibbles and the
+; word ([11:8] odd, type F) matches no cycle the CPU claims.
 .pio_version 1
 .program lpc_fe
 
 cyc:
-    out y, 4            ; START of the last LFRAME# clock
-    jmp y--, idle       ; not a target cycle
+    jmp x!=y, idle      ; START of the last LFRAME# clock is not 0000
+    set x, 1            ; count for an odd (reserved) CYCTYPE
     mov pc, isr         ; dispatch on the CYCTYPE nibble
 coll:
     wait 1 pin 5
@@ -37,7 +39,7 @@ samp:
     mov isr, !null      ; all ones: the position of the leading ones tells the cycle type apart
     in pins, 4
     jmp pin, cyc        ; LFRAME# high: this nibble is CYCTYPE
-    mov osr, isr        ; LFRAME# still low: this nibble is the START candidate
+    mov x, isr          ; LFRAME# still low: this nibble is the START candidate
     wait 1 pin 5
 .wrap
     set x, 3            ; 16 type 0000 I/O read      : 4 address nibbles

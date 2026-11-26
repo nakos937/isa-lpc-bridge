@@ -143,11 +143,13 @@ def run_cycle(kind, addr, data, ch, rnd, cpu_lat, claim_lat=None):
             dict(in_base=24, out_base=24, out_count=4, set_base=24, set_count=4, jmp_pin=LFRAME, tx_depth=4, rx_depth=4,
                  isr_left=False, autopush=8, sideset=tl.get('__ss'), side_base=LAD0, wrap_target=tl.get('__wt', 0), wrap_top=tl.get('__wp', len(tx_ops) - 1)))
     tx.y = WAIT_SYNC
+    fe.y = 0xFFFFFFF0                                              # lpc_init: set y, 15; mov y, ~y
+    fe.x = 0xFFFFFFFF                                              # as left by the last jmp x-- of the previous cycle
     sysm.pios[0].sms.append(fe); sysm.pios[1].sms.append(tx)
 
-    unclaimed = kind in ("skip", "tpm")
+    unclaimed = kind in ("skip", "tpm", "odd")
     if unclaimed:   # another device's I/O read: the target must leave LAD alone, then return to idle on the next START
-        ops = [("start", 5 if kind == "tpm" else 0), ("d", 0)] + [("d", n) for n in nib(addr, 4)] + [("d", 0xF), ("z",)] + [("exp", 0xF, "float")] * 4 + [("z",)] * 2 + [("start",), ("z",)]
+        ops = [("start", 5 if kind == "tpm" else 0), ("d", rnd.choice([1, 3, 9, 0xB]) if kind == "odd" else 0)] + [("d", n) for n in nib(addr, 4)] + [("d", 0xF), ("z",)] + [("exp", 0xF, "float")] * 4 + [("z",)] * 2 + [("start",), ("z",)]
     else:
         ops = build(kind, addr, data, ch, rnd.choice([0, 0, 1, 3]))
     if claim_lat is None: claim_lat = rnd.uniform(14, CLAIM_MAX)
@@ -232,6 +234,7 @@ def run_cycle(kind, addr, data, ch, rnd, cpu_lat, claim_lat=None):
             pad.append((t + PAD_DELAY, new_val, new_dir))
         t += CYC
     if kind == "tpm" and seen_words: errors.append("front end took a TPM cycle (START 0101)")
+    if kind == "odd" and fl["coll"] <= fe.pc < fl["idle"]: errors.append("front end stuck collecting after a reserved CYCTYPE")
     if unclaimed and tx.pc != tl["start"]: errors.append("tx not back at start (pc %d)" % tx.pc)
     errors += host.errors
     if not host.done: errors.append("host did not finish (script stalled at op %d: %s)" % (host.i, host.ops[host.i] if host.i < len(host.ops) else None))
@@ -241,7 +244,7 @@ def run_cycle(kind, addr, data, ch, rnd, cpu_lat, claim_lat=None):
 def main():
     rnd = random.Random(int(os.environ.get("SEED", "1")))
     n = int(os.environ.get("N", "300"))
-    kinds = ["ior", "iow", "dmar8", "dmaw8", "dmar16", "dmaw16", "skip", "tpm"]
+    kinds = ["ior", "iow", "dmar8", "dmaw8", "dmar16", "dmaw16", "skip", "tpm", "odd"]
     bad = 0
     for i in range(n):
         kind = kinds[i % len(kinds)] if os.environ.get("ROUND") else rnd.choice(kinds)
