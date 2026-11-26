@@ -135,7 +135,7 @@ int main(void) {
     bool rst_prev = isa_pcirst_n();
     for (;;) {
         lpc_poll();                                 // LPC cycles first, always
-        persist_poll();                             // a save or forget request from the config port (blocks up to a second)
+        persist_poll();                             // a save or forget request from the config port (blocks up to 1.3 s)
         lpc_service_drq();                          // DRQ -> LDRQ#: cheap (one register read), every iteration
         bool r = isa_pcirst_n();
         if (r != rst_prev) {                        // host reset edge: flush every engine, the cards see RESETDRV in hardware

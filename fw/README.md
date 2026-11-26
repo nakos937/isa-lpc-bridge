@@ -22,7 +22,7 @@ Status: builds clean, simulated, runs on the PASS_HG25 board.
 - `src/lpc.c` (core 0): serves the claimed words: I/O writes are acknowledged first (posted) and executed after; reads and DMA wait
   with long SYNC until the ISA cycle is done.
 - `src/mailbox.c`: run ISA cycles from the debugger, no host needed.
-- `src/persist.c`, `persist_hw.c`: `ISALPC SAVE` keeps the bridge config (port filter, IRQ list, timing, flags) in the last 16 KB of the flash; it is loaded at boot when the clock matches and a CRC is good. Flags that could lock the host out (`F_STOP_LPC`, `F_NO_CFGPORT`, `F_HOLD_RESET`) and the config port itself are never restored. A save blocks the bridge for 0.1 to 1 s. `ISALPC FORGET` erases it; from a debug probe: `flash erase_sector 0 0x1fc 0x1fe`. Test: `cc -Isrc -o /tmp/t test/persist_test.c && /tmp/t`.
+- `src/persist.c`, `persist_hw.c`: `ISALPC SAVE` keeps the bridge config (port filter, IRQ list, timing, flags) in the last 16 KB of the flash; it is loaded at boot when the clock matches and a CRC is good. Flags that could lock the host out (`F_STOP_LPC`, `F_NO_CFGPORT`, `F_HOLD_RESET`) and the config port itself are never restored. A save blocks the bridge for 0.15 to 1.3 s (W25Q16JV: 3 sector erases of 45-400 ms, 33 pages of 0.4-3 ms). `ISALPC FORGET` erases it; from a debug probe: `flash erase_sector 0 0x1fc 0x1fe`. Test: `cc -Isrc -o /tmp/t test/persist_test.c && /tmp/t`.
 - `src/cfgport.c`: config port at 4E/4F for the host tool (`host/isalpc.c`). Test: `cc -Isrc -o /tmp/t test/cfgport_test.c && /tmp/t`.
 - GPIO base 16 on all three PIOs (LAD..LDRQ = GPIO40..47 are PIO pins 24..31).
 

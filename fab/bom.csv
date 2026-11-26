@@ -1,54 +1,54 @@
 Comment,Designator,Footprint,LCSC Part #,MPN,Source note,JLC class,Stock
-47u/10V,C1,C_1206_3216Metric,C96123,CL31A476MPHNNNE,"Basic, 47 uF 10 V X5R 1206 ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it",Basic,449969
-10u/50V,"C2,C4,C21,C22,C25,C26,C28,C67",C_1206_3216Metric,C13585,CL31A106KBHNNNE,"Basic, 10 uF 50 V X5R 1206 (50 V part keeps more capacitance at 12 V than the 25 V part); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Basic,3749704
-22u/25V,"C3,C7,C14",C_1206_3216Metric,C12891,CL31A226KAHNNNE,"Basic, 22 uF 25 V X5R 1206 ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it",Basic,1980959
-22u/10V,"C5,C16,C17",C_1206_3216Metric,C5672,CL31A226KPHNNNE,"Preferred part, 1206 22 uF 10 V X5R, 200985 in stock, 0.0738 USD; DC-bias not compared; JLC parts library search 2026-11-08",Preferred,195892
-100n,"C6,C8,C10,C11,C12,C13,C15,C23,C33,C34,C35,C36,C37,C38,C39,C40,C41,C42,C43,C44,C45,C50,C51,C52,C53,C54,C55,C56,C57,C58,C59,C60,C61,C62,C63,C64,C65,C66,C68,C69",C_0402_1005Metric,C1525,CL05B104KO5NNNC,"Basic part, 0.0031 USD; JLC parts library search 2026-11-08",Basic,33512849
-10u/10V,"C9,C18,C46,C47",C_0805_2012Metric,C15850,CL21A106KAYNNNE,"Basic, 10 uF 25 V X5R 0805 (25 V part keeps more capacitance at 3.3/5 V than the 10 V part); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Basic,8447152
-1u/16V,"C19,C20,C24",C_0402_1005Metric,C52923,CL05A105KA5NQNC,"Basic part, 0.0058 USD, rated 25 V (>= 16 V); JLC parts library search 2026-11-08",Basic,11359732
-22n,C27,C_0402_1005Metric,C1532,0402B223K500NT,"Basic; CC2 of the ADP5071 inverter (HG23, was 47 nF Extended)",Basic,554463
-4.7u/10V,"C29,C30,C31,C32",C_0402_1005Metric,C23733,CL05A475MP5NRNC,"Basic part, 0.0118 USD; JLC parts library search 2026-11-08",Basic,1004888
-15p,"C48,C49",C_0402_1005Metric,C1548,0402CG150J500NT,"Basic part, 15 pF C0G 50 V +-5 %, 0.0026 USD; JLC parts library search 2026-11-08",Basic,1181758
-SMAJ5.0A,D1,D_SMA,C2925443,SMAJ5.0A,"Preferred, SMA 400 W 5 V standoff, Vc 9.2 V at 43.5 A; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,100734
-SMAJ13A,D2,D_SMA,C19077533,SMAJ13A,"Preferred, SMA 400 W 13 V standoff, Vc 21.5 V at 18.6 A; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,40366
-SMF12A,D3,D_SOD-123FL_1.1x1.5,C19077506,SMF12A,"Preferred, SOD-123FL 200 W 12 V standoff, VBR 14.7 V, Vc 19.9 V at 10.1 A (same figures as the Littelfuse sheet read earlier); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,326547
-DFLS240,D4,D_SOD-123FL_1.1x1.5,C22466352,DSK24,"Preferred, SOD-123FL Schottky 2 A 40 V, 550 mV at 2 A, 500 uA at 40 V; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,2441720
-1812L260/12MR,F1,Fuse_1812_4532Metric,C151171,1812L260/12MR,"LCSC page: 2.6 A hold, 5 A trip, 12 V; 815 in stock (snapshot)",Extended,288
-1812L150/24MR,F2,Fuse_1812_4532Metric,C142805,1812L150/24MR,"LCSC page lists this MPN: 1.5 A hold, 3 A trip, 24 V; 29k-57k in stock (snapshots)",Extended,11284
-BLM31KN601SN1L,"FB1,FB2,FB4",L_1206_3216Metric,C668306,BLM31KN601SN1L,"JLC parts API 2026-11-23: C237603 (SH1L) 0 in stock, C668306 (SN1L, the netlist part) 4650; 600 ohm, 2.9 A, 38 mohm",Extended,4650
-BLM21PG221SN1D,"FB3,FB5",L_0805_2012Metric,C88994,BLM21PG221SH1D,"JLC parts API 2026-11-23: C85840 (SN1D) 0 in stock, C88994 (SH1D, same Murata bead) 26876; 220 ohm, 2 A, 45 mohm",Extended,26876
-Berg_Floppy_Power_4P,J1,Berg_171826-4_1x04_P2.50mm,C590635,171826-4,"LCSC page: right angle 1x4P 2.5 mm, through hole, 10975 in stock, 0.4868 USD; JLC parts library: Extended, assembly type Wave Soldering",Extended,10970
-PROG_SWD,J2,PinHeader_1x04_P2.54mm_Horizontal,C91552,2.54-1*4P reverse bent pin header,"right angle 1x4P 2.54 mm, gold, brass, square pin, mating 6 mm, insulation height 2.54 mm; JLC in-house stock 607 (stock 17693), 0.0143 USD at 1: cheapest candidate with in-house stock in the LCSC list the user pasted (172 codes, none Basic/Preferred; the whole Basic+Preferred library has no connector); swapped 2026-11-09, previous C32713263 (hanxia, 0.0189, in-house 215), originally C42431821",Extended,17687
+47u/10V,C1,C_1206_3216Metric,C96123,CL31A476MPHNNNE,"Basic, 47 uF 10 V X5R 1206 ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it",Basic,548320
+10u/50V,"C2,C4,C21,C22,C25,C26,C28,C67",C_1206_3216Metric,C13585,CL31A106KBHNNNE,"Basic, 10 uF 50 V X5R 1206 (50 V part keeps more capacitance at 12 V than the 25 V part); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Basic,3720717
+22u/25V,"C3,C7,C14",C_1206_3216Metric,C12891,CL31A226KAHNNNE,"Basic, 22 uF 25 V X5R 1206 ; swapped from 1210 to 1206 (Basic/Preferred library has no 1210 part; avoids the 3.07 USD Extended feeder fee); DC bias not verified (Samsung general catalog has no per-part curve); bulk or output-filter use, no loop depends on it",Basic,2467652
+22u/10V,"C5,C16,C17",C_1206_3216Metric,C5672,CL31A226KPHNNNE,"Preferred part, 1206 22 uF 10 V X5R, 200985 in stock, 0.0738 USD; DC-bias not compared; JLC parts library search 2026-11-08",Preferred,185343
+100n,"C6,C8,C10,C11,C12,C13,C15,C23,C33,C34,C35,C36,C37,C38,C39,C40,C41,C42,C43,C44,C45,C50,C51,C52,C53,C54,C55,C56,C57,C58,C59,C60,C61,C62,C63,C64,C65,C66,C68,C69",C_0402_1005Metric,C1525,CL05B104KO5NNNC,"Basic part, 0.0031 USD; JLC parts library search 2026-11-08",Basic,29944449
+10u/10V,"C9,C18,C46,C47",C_0805_2012Metric,C15850,CL21A106KAYNNNE,"Basic, 10 uF 25 V X5R 0805 (25 V part keeps more capacitance at 3.3/5 V than the 10 V part); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Basic,9180891
+1u/16V,"C19,C20,C24",C_0402_1005Metric,C52923,CL05A105KA5NQNC,"Basic part, 0.0058 USD, rated 25 V (>= 16 V); JLC parts library search 2026-11-08",Basic,12141127
+22n,C27,C_0402_1005Metric,C1532,0402B223K500NT,"Basic; CC2 of the ADP5071 inverter (HG23, was 47 nF Extended)",Basic,534966
+4.7u/10V,"C29,C30,C31,C32",C_0402_1005Metric,C23733,CL05A475MP5NRNC,"Basic part, 0.0118 USD; JLC parts library search 2026-11-08",Basic,2562905
+15p,"C48,C49",C_0402_1005Metric,C1548,0402CG150J500NT,"Basic part, 15 pF C0G 50 V +-5 %, 0.0026 USD; JLC parts library search 2026-11-08",Basic,1310643
+SMAJ5.0A,D1,D_SMA,C2925443,SMAJ5.0A,"Preferred, SMA 400 W 5 V standoff, Vc 9.2 V at 43.5 A; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,92108
+SMAJ13A,D2,D_SMA,C19077533,SMAJ13A,"Preferred, SMA 400 W 13 V standoff, Vc 21.5 V at 18.6 A; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,36100
+SMF12A,D3,D_SOD-123FL_1.1x1.5,C19077506,SMF12A,"Preferred, SOD-123FL 200 W 12 V standoff, VBR 14.7 V, Vc 19.9 V at 10.1 A (same figures as the Littelfuse sheet read earlier); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,309891
+DFLS240,D4,D_SOD-123FL_1.1x1.5,C22466352,DSK24,"Preferred, SOD-123FL Schottky 2 A 40 V, 550 mV at 2 A, 500 uA at 40 V; JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Preferred,2412292
+1812L260/12MR,F1,Fuse_1812_4532Metric,C151171,1812L260/12MR,"LCSC page: 2.6 A hold, 5 A trip, 12 V; 815 in stock (snapshot)",Extended,1006
+1812L150/24MR,F2,Fuse_1812_4532Metric,C142805,1812L150/24MR,"LCSC page lists this MPN: 1.5 A hold, 3 A trip, 24 V; 29k-57k in stock (snapshots)",Extended,35453
+BLM31KN601SN1L,"FB1,FB2,FB4",L_1206_3216Metric,C668306,BLM31KN601SN1L,"JLC parts API 2026-11-23: C237603 (SH1L) 0 in stock, C668306 (SN1L, the netlist part) 4650; 600 ohm, 2.9 A, 38 mohm",Extended,4571
+BLM21PG221SN1D,"FB3,FB5",L_0805_2012Metric,C88994,BLM21PG221SH1D,"JLC parts API 2026-11-23: C85840 (SN1D) 0 in stock, C88994 (SH1D, same Murata bead) 26876; 220 ohm, 2 A, 45 mohm",Extended,23383
+Berg_Floppy_Power_4P,J1,Berg_171826-4_1x04_P2.50mm,C590635,171826-4,"LCSC page: right angle 1x4P 2.5 mm, through hole, 10975 in stock, 0.4868 USD; JLC parts library: Extended, assembly type Wave Soldering",Extended,10750
+PROG_SWD,J2,PinHeader_1x04_P2.54mm_Horizontal,C91552,2.54-1*4P reverse bent pin header,"right angle 1x4P 2.54 mm, gold, brass, square pin, mating 6 mm, insulation height 2.54 mm; JLC in-house stock 607 (stock 17693), 0.0143 USD at 1: cheapest candidate with in-house stock in the LCSC list the user pasted (172 codes, none Basic/Preferred; the whole Basic+Preferred library has no connector); swapped 2026-11-09, previous C32713263 (hanxia, 0.0189, in-house 215), originally C42431821",Extended,7419
 ISA_16bit_Socket,J3,ISA,C5173323,ED98KBGFBK,"user-chosen cheapest: LCSC 1.2275 USD at 1 (1.021 at 10), 29 in stock; JLC library Extended, assembly type Wave Soldering. Datasheet pattern = our ISA footprint (row 5.08, pitch 2.54, 31 + 10.16 gap + 18, span 129.54, hole 1.0). Contact: brass, 1 microinch gold flash (code BGF). Alternative with 10 microinch gold on phosphor bronze: Sullins EBC49DCWN-S420 C4883475 (6.16 USD, stock 0 pre-sale)",Extended,29
-TPMS1_LPC,J4,PinHeader_2x09_P2.54mm_Horizontal,C41417357,HX PZ2.54-2x9P WC-A,"LCSC page: right angle, 2 rows, 18P, 2.54 mm, plastic height 2.5 mm, mating pin 6 mm, tail 3 mm, 885 in stock, 0.1427 USD; JLC parts library / LCSC page 2026-11-08",Extended,886
-15u NR4030S150MT,L1,L_NR4030,C28642356,NR4030S150MT,"4x4 mm, land pattern a 1.9 b 1.1 c 3.7 from its datasheet (footprint L_NR4030), 2269 in stock, 0.0385 USD, 15 uH, Isat 1.8 A, Irms 1.2 A, DCR 213 mohm (JLC attributes); JLC parts library 2026-11-08",Extended,2269
-3.3u AOTA-B201610S3R3-101-T,L2,L_Abracon_AOTA-B201610S3R3-101-T,C42411119,AOTA-B201610S3R3-101-T,LCSC listing,Extended,1418
-200k,R1,R_0402_1005Metric,C25764,0402WGF2003TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,3660772
-47k,R2,R_0402_1005Metric,C25792,0402WGF4702TCE,"Basic, 1 %; EN2 divider 200k/47k gives 2.28 V from 12 V (threshold 1.15 V, abs max 6 V); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Basic,6079366
-1M,R3,R_0402_1005Metric,C26083,0402WGF1004TCE,"Basic, 1 %; ADP5071 RFT2 (HG23)",Basic,2700485
-62k,R4,R_0402_1005Metric,C37825,0402WGF6202TCE,"Extended, 1 %, 419297 in stock; ADP5071 RFB2: 1M/62k gives -12.10 V (HG23); no Basic/Preferred pair reaches -12 V",Extended,419297
-15k,R5,R_0402_1005Metric,C25756,0402WGF1502TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,2337428
-33,"R6,R21,R22,R23,R24,R25,R26",R_0402_1005Metric,C25105,0402WGF330JTCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,3608292
-1k,"R7,R18",R_0402_1005Metric,C11702,0402WGF1001TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,33479298
-10k,"R8,R14,R15,R16,R17,R27",R_0402_1005Metric,C25744,0402WGF1002TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,22319276
-4.7k,"R9,R10,R11,R12,R13,R19",R_0402_1005Metric,C25900,0402WGF4701TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,15571471
-100,R20,R_0402_1005Metric,C25076,0402WGF1000TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,11644706
-1k 4x0402,"RN1,RN2",R_Array_Convex_4x0402,C25726,4D02WGJ0102TCE,"Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)",Extended,97574
-4.7k 4x0402,"RN3,RN4,RN5,RN16,RN17",R_Array_Convex_4x0402,C29586,4D02WGJ0472TCE,"Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)",Extended,155882
+TPMS1_LPC,J4,PinHeader_2x09_P2.54mm_Horizontal,C41417357,HX PZ2.54-2x9P WC-A,"LCSC page: right angle, 2 rows, 18P, 2.54 mm, plastic height 2.5 mm, mating pin 6 mm, tail 3 mm, 885 in stock, 0.1427 USD; JLC parts library / LCSC page 2026-11-08",Extended,863
+15u NR4030S150MT,L1,L_NR4030,C28642356,NR4030S150MT,"4x4 mm, land pattern a 1.9 b 1.1 c 3.7 from its datasheet (footprint L_NR4030), 2269 in stock, 0.0385 USD, 15 uH, Isat 1.8 A, Irms 1.2 A, DCR 213 mohm (JLC attributes); JLC parts library 2026-11-08",Extended,2147
+3.3u AOTA-B201610S3R3-101-T,L2,L_Abracon_AOTA-B201610S3R3-101-T,C42411119,AOTA-B201610S3R3-101-T,LCSC listing,Extended,5102
+200k,R1,R_0402_1005Metric,C25764,0402WGF2003TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,3132354
+47k,R2,R_0402_1005Metric,C25792,0402WGF4702TCE,"Basic, 1 %; EN2 divider 200k/47k gives 2.28 V from 12 V (threshold 1.15 V, abs max 6 V); JLC parts library 2026-11-08, swapped to avoid the 3.07 USD Extended feeder fee",Basic,4811020
+1M,R3,R_0402_1005Metric,C26083,0402WGF1004TCE,"Basic, 1 %; ADP5071 RFT2 (HG23)",Basic,3246352
+62k,R4,R_0402_1005Metric,C37825,0402WGF6202TCE,"Extended, 1 %, 419297 in stock; ADP5071 RFB2: 1M/62k gives -12.10 V (HG23); no Basic/Preferred pair reaches -12 V",Extended,373681
+15k,R5,R_0402_1005Metric,C25756,0402WGF1502TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,1877877
+33,"R6,R21,R22,R23,R24,R25,R26",R_0402_1005Metric,C25105,0402WGF330JTCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,4100376
+1k,"R7,R18",R_0402_1005Metric,C11702,0402WGF1001TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,25385515
+10k,"R8,R14,R15,R16,R17,R27",R_0402_1005Metric,C25744,0402WGF1002TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,32225621
+4.7k,"R9,R10,R11,R12,R13,R19",R_0402_1005Metric,C25900,0402WGF4701TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,12074133
+100,R20,R_0402_1005Metric,C25076,0402WGF1000TCE,"Basic, 1 %; JLC parts library search 2026-11-08",Basic,9396331
+1k 4x0402,"RN1,RN2",R_Array_Convex_4x0402,C25726,4D02WGJ0102TCE,"Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)",Extended,72287
+4.7k 4x0402,"RN3,RN4,RN5,RN16,RN17",R_Array_Convex_4x0402,C29586,4D02WGJ0472TCE,"Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)",Extended,146834
 8.2k,"RN6,RN7,RN8,RN9,RN10,RN11,RN12,RN13,RN14,RN15",R_Array_Convex_4x0402,C26079,4D02WGJ0822TCE,LCSC listing,Extended,7931
-33 4x0402,RN18,R_Array_Convex_4x0402,C25501,4D02WGJ0330TCE,"Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)",Extended,268848
-68,"RN19,RN20,RN21,RN22",R_Array_Convex_4x0402,C52984,4D02WGJ0680TCE,LCSC listing,Extended,21290
-BL9110-330BPFB,U1,SOT-223-3_TabPin2,C169246,BL9110-330BPFB,"SOT-223-3-B: 1 GND, 2 VOUT + tab, 3 VIN (datasheet page 2); 28511 in stock, 0.1625 USD, 3.3 V 1 A, dropout 110 mV at 1 A, 45 uVrms, output cap 2.2 uF ceramic; same pad order as Diodes AP7361C-33ER-13 (C3743528, 0.61 USD, 1547 in stock) if a Diodes part is wanted; JLC parts library / LCSC page 2026-11-08",Extended,28451
-ADP5071ACPZ,U2,LFCSP-20-1EP_4x4mm_P0.5mm_EP2.6x2.6mm,C481889,ADP5071ACPZ-R7,"LFCSP-20 4x4 (CP-20-8), 193 in stock, 7.29 USD; datasheet Table 5 pin mapping applied in build.py; JLC parts library 2026-11-08",Extended,193
-MC79M05CDTG,U3,TO-252-3_TabPin2,C51416,MC79M05CDTRKG,"JLC library: DPAK-3, 4605 in stock, 0.2779 USD at 1; same die and package as MC79M05CDTG (C73400 has stock 0)",Extended,4555
-RP2354B,U4,QFN-80-1EP_10x10mm_P0.4mm_EP3.4x3.4mm,C39843328,RP2354B,"LCSC/JLC listing (search 2026-11-08), 500-piece reels",Extended,632
+33 4x0402,RN18,R_Array_Convex_4x0402,C25501,4D02WGJ0330TCE,"Uniroyal 4x0402 array +-5 %, JLC parts library search 2026-11-08 (same family as the 8.2k and 68 ohm arrays)",Extended,238991
+68,"RN19,RN20,RN21,RN22",R_Array_Convex_4x0402,C52984,4D02WGJ0680TCE,LCSC listing,Extended,21170
+BL9110-330BPFB,U1,SOT-223-3_TabPin2,C169246,BL9110-330BPFB,"SOT-223-3-B: 1 GND, 2 VOUT + tab, 3 VIN (datasheet page 2); 28511 in stock, 0.1625 USD, 3.3 V 1 A, dropout 110 mV at 1 A, 45 uVrms, output cap 2.2 uF ceramic; same pad order as Diodes AP7361C-33ER-13 (C3743528, 0.61 USD, 1547 in stock) if a Diodes part is wanted; JLC parts library / LCSC page 2026-11-08",Extended,23297
+ADP5071ACPZ,U2,LFCSP-20-1EP_4x4mm_P0.5mm_EP2.6x2.6mm,C481889,ADP5071ACPZ-R7,"LFCSP-20 4x4 (CP-20-8), 193 in stock, 7.29 USD; datasheet Table 5 pin mapping applied in build.py; JLC parts library 2026-11-08",Extended,18
+MC79M05CDTG,U3,TO-252-3_TabPin2,C51416,MC79M05CDTRKG,"JLC library: DPAK-3, 4605 in stock, 0.2779 USD at 1; same die and package as MC79M05CDTG (C73400 has stock 0)",Extended,4116
+RP2354B,U4,QFN-80-1EP_10x10mm_P0.4mm_EP3.4x3.4mm,C39843328,RP2354B,"LCSC/JLC listing (search 2026-11-08), 500-piece reels",Extended,10522
 SN74AHCT595,"U5,U6,U7",DHVQFN-16-1EP_2.5x3.5mm_P0.5mm_EP1x2mm,C31346359,SN74AHCT595BQBR,"JLC library: WQFN-16 2.5x3.5, 5951 in stock, 0.4694 USD at 1; TI BQB0016A is the footprint this board was built for (Nexperia C554702 has stock 0)",Extended,5951
-SN74LVC165AWBQBRQ1,"U8,U9",WQFN-16(2x3),C33901164,SN74LVC165AWBQBRQ1,"BQB WQFN-16 3.5 x 2.5 mm per its datasheet package table (same outline as our footprint), 5754 in stock, 0.2553 USD; JLC parts library / LCSC page 2026-11-08",Extended,5754
-SN74AHCT244,U10,DHVQFN-20-1EP_2.5x4.5mm_P0.5mm_EP1x3mm,C554604,"74AHCT244BQ,115","DHVQFN-20-EP 2.5 x 4.5, 492 in stock, 0.6796 USD (user table); JLC parts library / LCSC page 2026-11-08",Extended,492
-74AHCT138,U11,TSSOP-16_4.4x5mm_P0.65mm,C554525,"74AHCT138PW,118","TSSOP-16, 307 in stock, 0.2311 USD (user table); the DHVQFN-16 138 has no stock; JLC parts library / LCSC page 2026-11-08",Extended,307
-SN74LVC4245A,"U12,U13",TSSOP-24_4.4x7.8mm_P0.65mm,C7859,SN74LVC4245APWR,"Preferred JLC part, TSSOP-24, 61167 in stock, 0.5185 USD; pin 23 = VCCB tied to +3V3 (datasheet SCAS375K); JLC parts library 2026-11-08",Preferred,59121
-74LVC2G74,U14,VSSOP-8_2.3x2mm_P0.5mm,C7851,SN74LVC2G74DCUR,LCSC listing,Extended,11444
-74AHCT1G125,U15,SOT-23-5,C7484,SN74AHCT1G125DBVR,LCSC listing,Extended,37045
-74AHCT1G00,U16,SOT-23-5,C473380,SN74AHCT1G00DBVR,LCSC listing,Extended,12817
-12MHz ABM8-272-T3,Y1,Crystal_SMD_3225-4Pin_3.2x2.5mm,C20625731,ABM8-272-T3,JLC/LCSC listing,Extended,9481
+SN74LVC165AWBQBRQ1,"U8,U9",WQFN-16(2x3),C33901164,SN74LVC165AWBQBRQ1,"BQB WQFN-16 3.5 x 2.5 mm per its datasheet package table (same outline as our footprint), 5754 in stock, 0.2553 USD; JLC parts library / LCSC page 2026-11-08",Extended,2547
+SN74AHCT244,U10,DHVQFN-20-1EP_2.5x4.5mm_P0.5mm_EP1x3mm,C554604,"74AHCT244BQ,115","DHVQFN-20-EP 2.5 x 4.5, 492 in stock, 0.6796 USD (user table); JLC parts library / LCSC page 2026-11-08",Extended,487
+74AHCT138,U11,TSSOP-16_4.4x5mm_P0.65mm,C554525,"74AHCT138PW,118","TSSOP-16, 307 in stock, 0.2311 USD (user table); the DHVQFN-16 138 has no stock; JLC parts library / LCSC page 2026-11-08",Extended,295
+SN74LVC4245A,"U12,U13",TSSOP-24_4.4x7.8mm_P0.65mm,C7859,SN74LVC4245APWR,"Preferred JLC part, TSSOP-24, 61167 in stock, 0.5185 USD; pin 23 = VCCB tied to +3V3 (datasheet SCAS375K); JLC parts library 2026-11-08",Preferred,30226
+74LVC2G74,U14,VSSOP-8_2.3x2mm_P0.5mm,C7851,SN74LVC2G74DCUR,LCSC listing,Extended,7462
+74AHCT1G125,U15,SOT-23-5,C7484,SN74AHCT1G125DBVR,LCSC listing,Extended,22068
+74AHCT1G00,U16,SOT-23-5,C473380,SN74AHCT1G00DBVR,LCSC listing,Extended,27524
+12MHz ABM8-272-T3,Y1,Crystal_SMD_3225-4Pin_3.2x2.5mm,C20625731,ABM8-272-T3,JLC/LCSC listing,Extended,8119
 ASE-14.31818MHZ-L-C-T,Y2,Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm,C295523,OXETGLJANF-14.31818MHZ,"datasheet read: 3.2x2.5 mm, pad pitch 2.10 x 1.60 (ours 2.10 x 1.65), pin 1 tri-state (high or open = on), 2 GND, 3 OUT, 4 VDD, 3.3 V +-10 %, jitter 1 ps RMS; LCSC lists +-50 ppm, 1956 in stock, 0.5299 USD (ASE C1987734: stock 0, 1.25 USD)",Extended,1956

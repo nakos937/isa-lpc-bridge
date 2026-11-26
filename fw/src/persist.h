@@ -10,5 +10,5 @@
 bool    persist_load(void);                       // boot: overlay a valid saved block on dbg.cfg; false if none or not usable
 bool    persist_valid(void);                      // a usable saved block exists
 void    persist_request(char cmd);                // config port: 'W' save the current cfg, 'X' forget the saved one
-void    persist_poll(void);                       // main loop: runs a pending request (blocks 0.1 to 1 s)
+void    persist_poll(void);                       // main loop: runs a pending request (blocks 0.15 to 1.3 s)
 uint8_t persist_status(void);
