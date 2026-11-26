@@ -31,7 +31,7 @@ target_link_libraries(isa_lpc
     pico_stdlib pico_multicore hardware_pio hardware_spi hardware_gpio hardware_clocks hardware_vreg hardware_watchdog hardware_sync hardware_resets hardware_flash)
 
 target_compile_options(isa_lpc PRIVATE -O3 -Wall -Wextra -Wno-unused-parameter)
-target_compile_definitions(isa_lpc PRIVATE PICO_STACK_SIZE=0x800 PICO_USE_STACK_GUARDS=0)
+target_compile_definitions(isa_lpc PRIVATE PICO_STACK_SIZE=0x800 PICO_USE_STACK_GUARDS=0 PICO_TIME_DEFAULT_ALARM_POOL_DISABLED=1)
 
 
 set(FW_SYSCLK_KHZ 400000 CACHE STRING "system clock in kHz, 340000..500000 (fw/sim window)")

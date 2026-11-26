@@ -244,12 +244,13 @@ void RAM_FUNC(lpc_service_irq)(void) {
     if (dbg.cfg.flags & F_NO_SERIRQ) return;
     uint32_t raw = isa_serirq_mask(isa_irq_stream());
     uint32_t now = time_us_32();
-    uint32_t asserted = 0;
-    for (unsigned f = 0; f < 17; f++) {
-        if ((raw >> f) & 1u) { irq_hold_until[f] = now + dbg.cfg.irq_hold_us; irq_held |= 1u << f; }   // stretch short pulses so a SERIRQ cycle sees them
-        else if ((irq_held >> f) & 1u && (int32_t)(irq_hold_until[f] - now) <= 0) irq_held &= ~(1u << f);
+    const uint32_t hold = dbg.cfg.irq_hold_us;
+    for (uint32_t todo = raw | irq_held; todo; todo &= todo - 1) {     // only frames that are asserted or still held
+        unsigned f = (unsigned)__builtin_ctz(todo);
+        if ((raw >> f) & 1u) { irq_hold_until[f] = now + hold; irq_held |= 1u << f; }   // stretch short pulses so a SERIRQ cycle sees them
+        else if ((int32_t)(irq_hold_until[f] - now) <= 0) irq_held &= ~(1u << f);
     }
-    asserted = irq_held;
+    const uint32_t asserted = irq_held;
     // PCH: low in an IRQ frame = active-high IRQ not requested, low in the IOCHCK# frame = asserted (x99pch.txt 7575)
     const uint32_t iochck = 1u << 16;
     uint32_t m = ((~asserted & ~iochck) | (asserted & iochck)) & dbg.cfg.irq_frames;

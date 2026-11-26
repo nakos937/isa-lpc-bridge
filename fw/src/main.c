@@ -40,7 +40,7 @@
   #endif
 #endif
 #define FLASH_MAX_KHZ 66000          // in-package W25Q16JV, kept well below its 133 MHz limit
-#define BUILD 21
+#define BUILD 22
 
 // fixed RAM address, outside the linker's view (image is far below 0x2007C000, stacks sit at 0x20080000): survives a reload
 extern void mailbox_poll(void);
@@ -101,7 +101,7 @@ int main(void) {
     vreg_disable_voltage_limit();
 #endif
     vreg_set_voltage(FW_VREG);
-    sleep_ms(10);
+    busy_wait_ms(10);
 #ifndef FW_RAM_BUILD
     uint32_t fdiv = (SYSCLK_KHZ + FLASH_MAX_KHZ - 1) / FLASH_MAX_KHZ;
     if (fdiv < 4) fdiv = 4;
@@ -149,6 +149,7 @@ int main(void) {
             bool hold = dbg.cfg.flags & F_HOLD_RESET;
             if (hold != held) isa_hold_reset(held = hold);
             lpc_service_irq();                      // uses the previous scan
+            lpc_poll();                             // a cycle claimed meanwhile waits for one step, not the whole block
             isa_chain_refresh();                    // starts the next one (SPI runs on its own)
             mailbox_poll();
 #ifndef FW_RAM_BUILD
